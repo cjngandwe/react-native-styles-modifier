@@ -299,17 +299,3 @@ export class Modifier<T extends StyleSheetLike = StyleSheetLike> {
     return style.root;
   }
 }
-
-class GlobalEVENT {
-  private ui = "red";
-
-  set setColor(value: string) {
-    this.ui = value;
-  }
-
-  get getColor() {
-    return this.ui;
-  }
-}
-
-export const globalEvent = new GlobalEVENT();
