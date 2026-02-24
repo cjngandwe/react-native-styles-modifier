@@ -32,8 +32,7 @@ import {
   createModifier,
   initializeTheme,
   initializeColorScheme,
-  useColorScheme,
-  useThemeToggle
+  useModifierTheme
 } from "react-native-modifier";
 
 // Initialize once in your App.tsx or index.tsx
@@ -43,11 +42,10 @@ initializeColorScheme(useSyncExternalStore);
 // Create modifier factory (outside component)
 const modifier = createModifier(StyleSheet);
 
-// Now use anywhere in your app - no need to pass useSyncExternalStore!
+// Now use anywhere in your app!
 function MyComponent() {
-  // Get reactive colors - component re-renders when theme changes
-  const colors = useColorScheme();
-  const toggleTheme = useThemeToggle();
+  // Get everything theme-related in one call
+  const { colors, mode, toggleTheme, setTheme } = useModifierTheme();
 
   // Build styles with theme colors
   const containerStyle = modifier()
@@ -59,9 +57,10 @@ function MyComponent() {
   return (
     <View style={containerStyle}>
       <Text style={{ color: colors.onSurface }}>
-        Hello, themed world!
+        Hello, themed world! Current mode: {mode}
       </Text>
       <Button title="Toggle Theme" onPress={toggleTheme} />
+      <Button title="Set Dark" onPress={() => setTheme('dark')} />
     </View>
   );
 }
@@ -186,16 +185,14 @@ import React from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 import {
   createModifier,
-  useColorScheme,
-  useThemeToggle
+  useModifierTheme
 } from "react-native-modifier";
 
 const modifier = createModifier(StyleSheet);
 
 function ThemedCard({ title, description }) {
-  // Get reactive colors - component re-renders when theme changes
-  const colors = useColorScheme();
-  const toggleTheme = useThemeToggle();
+  // Get everything theme-related in one call
+  const { colors, mode, toggleTheme } = useModifierTheme();
 
   const cardStyle = modifier()
     .backgroundColor(colors.surface)
@@ -270,16 +267,17 @@ initializeTheme("light", lightColors, darkColors);
 initializeColorScheme(useSyncExternalStore);
 
 // MyComponent.tsx - Use anywhere!
-import { useColorScheme } from "react-native-modifier";
+import { useModifierTheme } from "react-native-modifier";
 
 function MyComponent() {
   // Get all colors: your custom ones + Material Design 3 defaults
-  const colors = useColorScheme();
+  const { colors, toggleTheme } = useModifierTheme();
 
   return (
     <View style={{ backgroundColor: colors.brandPrimary }}>
       <Text style={{ color: colors.red200 }}>Custom colors!</Text>
       <Text style={{ color: colors.primary }}>Standard colors work too!</Text>
+      <Button title="Toggle Theme" onPress={toggleTheme} />
     </View>
   );
 }

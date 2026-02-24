@@ -292,6 +292,12 @@ export class Modifier<T extends StyleSheetLike = StyleSheetLike> {
     return this;
   }
 
+  //Opacity
+  opacity(value: number): this {
+    this.styles.opacity = value;
+    return this;
+  }
+
   build(): ViewStyle & TextStyle {
     const style = this.root.create({
       root: this.styles,

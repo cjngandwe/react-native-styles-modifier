@@ -30,47 +30,44 @@ function getUseSyncExternalStore(): UseSyncExternalStore {
   return globalUseSyncExternalStore;
 }
 
-// Hook to get reactive color scheme
-// Returns CustomColorScheme which can be augmented by users
-export function useColorScheme(): CustomColorScheme {
+// Consolidated hook that returns everything theme-related
+// This is the primary way to access theme in components
+export function useModifierTheme() {
   const useSyncExternalStore = getUseSyncExternalStore();
   const themeManager = getThemeManager();
 
+  // Get reactive colors
   const subscribe = (onStoreChange: () => void) => {
     return themeManager.subscribe(() => onStoreChange());
   };
 
-  const getSnapshot = () => {
+  const getColorSnapshot = () => {
     return themeManager.getColorScheme();
   };
 
-  return useSyncExternalStore(subscribe, getSnapshot) as CustomColorScheme;
-}
-
-// Hook to get theme mode
-export function useThemeMode(): ThemeMode {
-  const useSyncExternalStore = getUseSyncExternalStore();
-  const themeManager = getThemeManager();
-
-  const subscribe = (onStoreChange: () => void) => {
-    return themeManager.subscribe(() => onStoreChange());
-  };
-
-  const getSnapshot = () => {
+  const getModeSnapshot = () => {
     return themeManager.getThemeMode();
   };
 
-  return useSyncExternalStore(subscribe, getSnapshot);
-}
+  const colors = useSyncExternalStore(
+    subscribe,
+    getColorSnapshot,
+  ) as CustomColorScheme;
+  const mode = useSyncExternalStore(subscribe, getModeSnapshot);
 
-// Hook to get theme toggle function
-export function useThemeToggle(): () => void {
-  const themeManager = getThemeManager();
-  return () => themeManager.toggleTheme();
-}
+  // Theme control functions
+  const toggleTheme = () => {
+    themeManager.toggleTheme();
+  };
 
-// Hook to get theme setter function
-export function useSetTheme(): (mode: ThemeMode) => void {
-  const themeManager = getThemeManager();
-  return (mode: ThemeMode) => themeManager.setTheme(mode);
+  const setTheme = (newMode: ThemeMode) => {
+    themeManager.setTheme(newMode);
+  };
+
+  return {
+    colors,
+    mode,
+    toggleTheme,
+    setTheme,
+  };
 }

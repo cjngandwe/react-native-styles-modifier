@@ -9,12 +9,6 @@ export type {
 // Design tokens
 export { type DesignTokens, TokenProvider, defaultTokens } from "./tokens.ts";
 
-// Modifier with tokens (legacy, still supported)
-export {
-  ModifierWithTokens,
-  createModifierWithTokens,
-} from "./modifier-tokens.ts";
-
 // Theme system
 export {
   type ColorScheme,
@@ -32,13 +26,7 @@ export {
 export { ModifierWithTheme, createModifier } from "./modifier-theme.ts";
 
 // Color scheme hooks (for reactive theme access)
-export {
-  initializeColorScheme,
-  useColorScheme,
-  useThemeMode,
-  useThemeToggle,
-  useSetTheme,
-} from "./useColorScheme.ts";
+export { initializeColorScheme, useModifierTheme } from "./useColorScheme.ts";
 
 // External state management
 export {
