@@ -226,26 +226,129 @@ function ThemedCard({ title, description }) {
 
 ### Custom Color Schemes
 
+You can extend the color scheme with your own custom color names while maintaining full TypeScript support. Use module augmentation to declare your custom colors once, then use them everywhere without type parameters:
+
 ```typescript
-import { initializeTheme } from "react-native-modifier";
+// types.ts - Define your custom colors once
+import { ColorScheme } from "react-native-modifier";
 
-const customLight = {
-  primary: "#FF6B6B",
+// Augment the CustomColorScheme interface
+declare module "react-native-modifier" {
+  interface CustomColorScheme {
+    red100: string;
+    red200: string;
+    blue100: string;
+    blue200: string;
+    brandPrimary: string;
+    brandSecondary: string;
+  }
+}
+
+// Define light theme colors
+const lightColors: CustomColorScheme = {
+  // Standard Material Design 3 colors
+  primary: "#6750A4",
   onPrimary: "#FFFFFF",
-  surface: "#FFFFFF",
-  onSurface: "#000000",
-  // ... other colors (partial override supported)
+  primaryContainer: "#EADDFF",
+  onPrimaryContainer: "#21005D",
+  secondary: "#625B71",
+  onSecondary: "#FFFFFF",
+  secondaryContainer: "#E8DEF8",
+  onSecondaryContainer: "#1D192B",
+  tertiary: "#7D5260",
+  onTertiary: "#FFFFFF",
+  tertiaryContainer: "#FFD8E4",
+  onTertiaryContainer: "#31111D",
+  error: "#B3261E",
+  onError: "#FFFFFF",
+  errorContainer: "#F9DEDC",
+  onErrorContainer: "#410E0B",
+  background: "#FFFBFE",
+  onBackground: "#1C1B1F",
+  surface: "#FFFBFE",
+  onSurface: "#1C1B1F",
+  surfaceVariant: "#E7E0EC",
+  onSurfaceVariant: "#49454F",
+  outline: "#79747E",
+  outlineVariant: "#CAC4D0",
+  inverseSurface: "#313033",
+  inverseOnSurface: "#F4EFF4",
+  inversePrimary: "#D0BCFF",
+  shadow: "#000000",
+  scrim: "#000000",
+
+  // Your custom colors
+  red100: "#FFEBEE",
+  red200: "#EF5350",
+  blue100: "#E3F2FD",
+  blue200: "#42A5F5",
+  brandPrimary: "#FF6B6B",
+  brandSecondary: "#4ECDC4",
 };
 
-const customDark = {
-  primary: "#FF8787",
-  onPrimary: "#000000",
-  surface: "#1A1A1A",
-  onSurface: "#FFFFFF",
-  // ... other colors
+// Define dark theme colors
+const darkColors: CustomColorScheme = {
+  // Standard Material Design 3 colors
+  primary: "#D0BCFF",
+  onPrimary: "#381E72",
+  primaryContainer: "#4F378B",
+  onPrimaryContainer: "#EADDFF",
+  secondary: "#CCC2DC",
+  onSecondary: "#332D41",
+  secondaryContainer: "#4A4458",
+  onSecondaryContainer: "#E8DEF8",
+  tertiary: "#EFB8C8",
+  onTertiary: "#492532",
+  tertiaryContainer: "#633B48",
+  onTertiaryContainer: "#FFD8E4",
+  error: "#F2B8B5",
+  onError: "#601410",
+  errorContainer: "#8C1D18",
+  onErrorContainer: "#F9DEDC",
+  background: "#1C1B1F",
+  onBackground: "#E6E1E5",
+  surface: "#1C1B1F",
+  onSurface: "#E6E1E5",
+  surfaceVariant: "#49454F",
+  onSurfaceVariant: "#CAC4D0",
+  outline: "#938F99",
+  outlineVariant: "#49454F",
+  inverseSurface: "#E6E1E5",
+  inverseOnSurface: "#313033",
+  inversePrimary: "#6750A4",
+  shadow: "#000000",
+  scrim: "#000000",
+
+  // Your custom colors
+  red100: "#B71C1C",
+  red200: "#D32F2F",
+  blue100: "#0D47A1",
+  blue200: "#1976D2",
+  brandPrimary: "#FF8787",
+  brandSecondary: "#5FE3D8",
 };
 
-initializeTheme("light", customLight, customDark);
+// App.tsx - Initialize with custom colors
+import { useSyncExternalStore } from "react";
+import { initializeTheme, initializeColorScheme } from "react-native-modifier";
+
+initializeTheme("light", lightColors, darkColors);
+initializeColorScheme(useSyncExternalStore);
+
+// MyComponent.tsx - Use anywhere without type parameters!
+import { useColorScheme } from "react-native-modifier";
+
+function MyComponent() {
+  // Automatically typed with your custom colors!
+  const colors = useColorScheme();
+
+  return (
+    <View style={{ backgroundColor: colors.brandPrimary }}>
+      <Text style={{ color: colors.red200 }}>Custom colors!</Text>
+      <Text style={{ color: colors.primary }}>Standard colors too!</Text>
+    </View>
+  );
+}
 ```
 
 ## Design Tokens

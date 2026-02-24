@@ -9,6 +9,10 @@ type UseSyncExternalStore = <T>(
 // Global reference to useSyncExternalStore - must be initialized
 let globalUseSyncExternalStore: UseSyncExternalStore | null = null;
 
+// Augmentable interface for custom color schemes
+// Users can extend this via module augmentation
+export interface CustomColorScheme extends ColorScheme {}
+
 // Initialize the color scheme system with React's useSyncExternalStore
 export function initializeColorScheme(
   useSyncExternalStore: UseSyncExternalStore,
@@ -20,14 +24,15 @@ export function initializeColorScheme(
 function getUseSyncExternalStore(): UseSyncExternalStore {
   if (!globalUseSyncExternalStore) {
     throw new Error(
-      "Color scheme hooks not initialized. Call initializeColorScheme(useSyncExternalStore) before using theme hooks.",
+      "Color scheme hooks not initialized. Call initializeColorScheme(useSyncExternalStore, colorSchemeType) before using theme hooks.",
     );
   }
   return globalUseSyncExternalStore;
 }
 
 // Hook to get reactive color scheme
-export function useColorScheme(): ColorScheme {
+// Returns CustomColorScheme which can be augmented by users
+export function useColorScheme(): CustomColorScheme {
   const useSyncExternalStore = getUseSyncExternalStore();
   const themeManager = getThemeManager();
 
@@ -39,7 +44,7 @@ export function useColorScheme(): ColorScheme {
     return themeManager.getColorScheme();
   };
 
-  return useSyncExternalStore(subscribe, getSnapshot);
+  return useSyncExternalStore(subscribe, getSnapshot) as CustomColorScheme;
 }
 
 // Hook to get theme mode

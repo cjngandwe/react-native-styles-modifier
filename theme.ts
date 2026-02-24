@@ -130,7 +130,10 @@ export const darkColorScheme: ColorScheme = {
 export type ThemeMode = "light" | "dark";
 
 // Listener type for theme changes
-type ThemeChangeListener = (colorScheme: ColorScheme, mode: ThemeMode) => void;
+type ThemeChangeListener<T extends ColorScheme = ColorScheme> = (
+  colorScheme: T,
+  mode: ThemeMode,
+) => void;
 
 // External state manager interface
 export interface ExternalStateManager<T> {
@@ -139,29 +142,23 @@ export interface ExternalStateManager<T> {
   subscribe: (listener: (value: T) => void) => () => void;
 }
 
-// Theme manager class
-export class ThemeManager {
+// Theme manager class with generic color scheme support
+export class ThemeManager<T extends ColorScheme = ColorScheme> {
   private currentMode: ThemeMode = "light";
-  private lightScheme: ColorScheme = lightColorScheme;
-  private darkScheme: ColorScheme = darkColorScheme;
-  private listeners: Set<ThemeChangeListener> = new Set();
+  private lightScheme: T;
+  private darkScheme: T;
+  private listeners: Set<ThemeChangeListener<T>> = new Set();
   private externalStateManager?: ExternalStateManager<ThemeMode>;
   private unsubscribeExternal?: () => void;
 
   constructor(
     initialMode: ThemeMode = "light",
-    customLightScheme?: Partial<ColorScheme>,
-    customDarkScheme?: Partial<ColorScheme>,
+    customLightScheme?: T,
+    customDarkScheme?: T,
   ) {
     this.currentMode = initialMode;
-
-    if (customLightScheme) {
-      this.lightScheme = { ...lightColorScheme, ...customLightScheme };
-    }
-
-    if (customDarkScheme) {
-      this.darkScheme = { ...darkColorScheme, ...customDarkScheme };
-    }
+    this.lightScheme = customLightScheme || (lightColorScheme as T);
+    this.darkScheme = customDarkScheme || (darkColorScheme as T);
   }
 
   // Inject external state manager (e.g., from useExternalState or any state management)
@@ -208,17 +205,17 @@ export class ThemeManager {
   }
 
   // Get current color scheme
-  getColorScheme(): ColorScheme {
+  getColorScheme(): T {
     return this.currentMode === "light" ? this.lightScheme : this.darkScheme;
   }
 
   // Get specific color from current scheme
-  getColor(key: keyof ColorScheme): string {
-    return this.getColorScheme()[key];
+  getColor(key: keyof T): string {
+    return this.getColorScheme()[key] as string;
   }
 
   // Subscribe to theme changes
-  subscribe(listener: ThemeChangeListener): () => void {
+  subscribe(listener: ThemeChangeListener<T>): () => void {
     this.listeners.add(listener);
 
     // Return unsubscribe function
@@ -236,16 +233,13 @@ export class ThemeManager {
   }
 
   // Update color schemes
-  updateColorSchemes(
-    lightScheme?: Partial<ColorScheme>,
-    darkScheme?: Partial<ColorScheme>,
-  ) {
-    if (lightScheme) {
-      this.lightScheme = { ...this.lightScheme, ...lightScheme };
+  updateColorSchemes(newLightScheme?: Partial<T>, newDarkScheme?: Partial<T>) {
+    if (newLightScheme) {
+      this.lightScheme = { ...this.lightScheme, ...newLightScheme };
     }
 
-    if (darkScheme) {
-      this.darkScheme = { ...this.darkScheme, ...darkScheme };
+    if (newDarkScheme) {
+      this.darkScheme = { ...this.darkScheme, ...newDarkScheme };
     }
 
     this.notifyListeners();
@@ -261,23 +255,25 @@ export class ThemeManager {
 }
 
 // Global theme manager instance
-let globalThemeManager: ThemeManager | null = null;
+let globalThemeManager: ThemeManager<any> | null = null;
 
 // Get or create global theme manager
-export function getThemeManager(): ThemeManager {
+export function getThemeManager<
+  T extends ColorScheme = ColorScheme,
+>(): ThemeManager<T> {
   if (!globalThemeManager) {
-    globalThemeManager = new ThemeManager();
+    globalThemeManager = new ThemeManager<T>();
   }
-  return globalThemeManager;
+  return globalThemeManager as ThemeManager<T>;
 }
 
 // Initialize theme manager with custom configuration
-export function initializeTheme(
+export function initializeTheme<T extends ColorScheme = ColorScheme>(
   initialMode: ThemeMode = "light",
-  customLightScheme?: Partial<ColorScheme>,
-  customDarkScheme?: Partial<ColorScheme>,
-): ThemeManager {
-  globalThemeManager = new ThemeManager(
+  customLightScheme?: T,
+  customDarkScheme?: T,
+): ThemeManager<T> {
+  globalThemeManager = new ThemeManager<T>(
     initialMode,
     customLightScheme,
     customDarkScheme,
