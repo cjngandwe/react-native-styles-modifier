@@ -32,7 +32,12 @@ function getUseSyncExternalStore(): UseSyncExternalStore {
 
 // Consolidated hook that returns everything theme-related
 // This is the primary way to access theme in components
-export function useModifierTheme() {
+export function useModifierTheme(): {
+  colors: CustomColorScheme;
+  mode: ThemeMode;
+  toggleTheme: () => void;
+  setTheme: (mode: ThemeMode) => void;
+} {
   const useSyncExternalStore = getUseSyncExternalStore();
   const themeManager = getThemeManager();
 
