@@ -27,10 +27,3 @@ export { ModifierWithTheme, createModifier } from "./modifier-theme.ts";
 
 // Color scheme hooks (for reactive theme access)
 export { initializeColorScheme, useModifierTheme } from "./useColorScheme.ts";
-
-// External state management
-export {
-  type UseExternalState,
-  createExternalState,
-  useExternalState,
-} from "./useExternalState.ts";
