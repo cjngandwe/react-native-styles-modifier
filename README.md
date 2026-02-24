@@ -228,11 +228,8 @@ function ThemedCard({ title, description }) {
 
 You can extend the color scheme with your own custom color names while maintaining full TypeScript support. Use module augmentation to declare your custom colors once, then use them everywhere without type parameters:
 
-```typescript
-// types.ts - Define your custom colors once
-import { ColorScheme } from "react-native-modifier";
-
-// Augment the CustomColorScheme interface
+````typescript
+// types.ts - Declare your custom color names once
 declare module "react-native-modifier" {
   interface CustomColorScheme {
     red100: string;
@@ -244,40 +241,9 @@ declare module "react-native-modifier" {
   }
 }
 
-// Define light theme colors
-const lightColors: CustomColorScheme = {
-  // Standard Material Design 3 colors
-  primary: "#6750A4",
-  onPrimary: "#FFFFFF",
-  primaryContainer: "#EADDFF",
-  onPrimaryContainer: "#21005D",
-  secondary: "#625B71",
-  onSecondary: "#FFFFFF",
-  secondaryContainer: "#E8DEF8",
-  onSecondaryContainer: "#1D192B",
-  tertiary: "#7D5260",
-  onTertiary: "#FFFFFF",
-  tertiaryContainer: "#FFD8E4",
-  onTertiaryContainer: "#31111D",
-  error: "#B3261E",
-  onError: "#FFFFFF",
-  errorContainer: "#F9DEDC",
-  onErrorContainer: "#410E0B",
-  background: "#FFFBFE",
-  onBackground: "#1C1B1F",
-  surface: "#FFFBFE",
-  onSurface: "#1C1B1F",
-  surfaceVariant: "#E7E0EC",
-  onSurfaceVariant: "#49454F",
-  outline: "#79747E",
-  outlineVariant: "#CAC4D0",
-  inverseSurface: "#313033",
-  inverseOnSurface: "#F4EFF4",
-  inversePrimary: "#D0BCFF",
-  shadow: "#000000",
-  scrim: "#000000",
-
-  // Your custom colors
+// theme.ts - Define ONLY your custom colors
+// All Material Design 3 colors are handled automatically!
+const lightColors = {
   red100: "#FFEBEE",
   red200: "#EF5350",
   blue100: "#E3F2FD",
@@ -286,40 +252,7 @@ const lightColors: CustomColorScheme = {
   brandSecondary: "#4ECDC4",
 };
 
-// Define dark theme colors
-const darkColors: CustomColorScheme = {
-  // Standard Material Design 3 colors
-  primary: "#D0BCFF",
-  onPrimary: "#381E72",
-  primaryContainer: "#4F378B",
-  onPrimaryContainer: "#EADDFF",
-  secondary: "#CCC2DC",
-  onSecondary: "#332D41",
-  secondaryContainer: "#4A4458",
-  onSecondaryContainer: "#E8DEF8",
-  tertiary: "#EFB8C8",
-  onTertiary: "#492532",
-  tertiaryContainer: "#633B48",
-  onTertiaryContainer: "#FFD8E4",
-  error: "#F2B8B5",
-  onError: "#601410",
-  errorContainer: "#8C1D18",
-  onErrorContainer: "#F9DEDC",
-  background: "#1C1B1F",
-  onBackground: "#E6E1E5",
-  surface: "#1C1B1F",
-  onSurface: "#E6E1E5",
-  surfaceVariant: "#49454F",
-  onSurfaceVariant: "#CAC4D0",
-  outline: "#938F99",
-  outlineVariant: "#49454F",
-  inverseSurface: "#E6E1E5",
-  inverseOnSurface: "#313033",
-  inversePrimary: "#6750A4",
-  shadow: "#000000",
-  scrim: "#000000",
-
-  // Your custom colors
+const darkColors = {
   red100: "#B71C1C",
   red200: "#D32F2F",
   blue100: "#0D47A1",
@@ -328,28 +261,28 @@ const darkColors: CustomColorScheme = {
   brandSecondary: "#5FE3D8",
 };
 
-// App.tsx - Initialize with custom colors
+// App.tsx - Initialize with ONLY your custom colors
 import { useSyncExternalStore } from "react";
 import { initializeTheme, initializeColorScheme } from "react-native-modifier";
 
+// Pass only your custom colors - defaults are merged automatically!
 initializeTheme("light", lightColors, darkColors);
 initializeColorScheme(useSyncExternalStore);
 
-// MyComponent.tsx - Use anywhere without type parameters!
+// MyComponent.tsx - Use anywhere!
 import { useColorScheme } from "react-native-modifier";
 
 function MyComponent() {
-  // Automatically typed with your custom colors!
+  // Get all colors: your custom ones + Material Design 3 defaults
   const colors = useColorScheme();
 
   return (
     <View style={{ backgroundColor: colors.brandPrimary }}>
       <Text style={{ color: colors.red200 }}>Custom colors!</Text>
-      <Text style={{ color: colors.primary }}>Standard colors too!</Text>
+      <Text style={{ color: colors.primary }}>Standard colors work too!</Text>
     </View>
   );
 }
-```
 
 ## Design Tokens
 
@@ -369,7 +302,7 @@ const styles = modifier
   .borderRadiusToken("lg") // Uses 12px from tokens
   .shadowToken("md") // Applies medium shadow
   .build();
-```
+````
 
 ### Available Tokens
 

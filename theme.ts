@@ -153,12 +153,13 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
 
   constructor(
     initialMode: ThemeMode = "light",
-    customLightScheme?: T,
-    customDarkScheme?: T,
+    customLightColors?: Partial<T>,
+    customDarkColors?: Partial<T>,
   ) {
     this.currentMode = initialMode;
-    this.lightScheme = customLightScheme || (lightColorScheme as T);
-    this.darkScheme = customDarkScheme || (darkColorScheme as T);
+    // Merge custom colors with defaults
+    this.lightScheme = { ...lightColorScheme, ...customLightColors } as T;
+    this.darkScheme = { ...darkColorScheme, ...customDarkColors } as T;
   }
 
   // Inject external state manager (e.g., from useExternalState or any state management)
@@ -268,15 +269,16 @@ export function getThemeManager<
 }
 
 // Initialize theme manager with custom configuration
+// Only pass your custom colors - defaults are handled automatically
 export function initializeTheme<T extends ColorScheme = ColorScheme>(
   initialMode: ThemeMode = "light",
-  customLightScheme?: T,
-  customDarkScheme?: T,
+  customLightColors?: Partial<T>,
+  customDarkColors?: Partial<T>,
 ): ThemeManager<T> {
   globalThemeManager = new ThemeManager<T>(
     initialMode,
-    customLightScheme,
-    customDarkScheme,
+    customLightColors,
+    customDarkColors,
   );
   return globalThemeManager;
 }
