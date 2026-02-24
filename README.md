@@ -31,20 +31,22 @@ import { StyleSheet, View, Text, Button } from "react-native";
 import {
   createModifier,
   initializeTheme,
+  initializeColorScheme,
   useColorScheme,
   useThemeToggle
 } from "react-native-modifier";
 
-// Initialize theme once (in App.tsx)
+// Initialize once in your App.tsx or index.tsx
 initializeTheme('light');
+initializeColorScheme(useSyncExternalStore);
 
-// Create modifier factory
+// Create modifier factory (outside component)
 const modifier = createModifier(StyleSheet);
 
-// In your component
+// Now use anywhere in your app - no need to pass useSyncExternalStore!
 function MyComponent() {
   // Get reactive colors - component re-renders when theme changes
-  const colors = useColorScheme(useSyncExternalStore);
+  const colors = useColorScheme();
   const toggleTheme = useThemeToggle();
 
   // Build styles with theme colors
@@ -180,8 +182,8 @@ The theme system provides 24 semantic colors following Material Design 3 guideli
 ### Using Theme Colors in Components
 
 ```typescript
-import React, { useSyncExternalStore } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React from "react";
+import { StyleSheet, View, Text, Button } from "react-native";
 import {
   createModifier,
   useColorScheme,
@@ -192,7 +194,7 @@ const modifier = createModifier(StyleSheet);
 
 function ThemedCard({ title, description }) {
   // Get reactive colors - component re-renders when theme changes
-  const colors = useColorScheme(useSyncExternalStore);
+  const colors = useColorScheme();
   const toggleTheme = useThemeToggle();
 
   const cardStyle = modifier()
@@ -367,7 +369,7 @@ Full TypeScript support with autocomplete for all colors, tokens, and methods.
 ### Theme-Aware Card Component
 
 ```typescript
-import React, { useSyncExternalStore } from "react";
+import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { createModifier, useColorScheme } from "react-native-modifier";
 
@@ -375,7 +377,7 @@ const modifier = createModifier(StyleSheet);
 
 function ThemedCard({ title, description }) {
   // Get reactive colors - component re-renders when theme changes
-  const colors = useColorScheme(useSyncExternalStore);
+  const colors = useColorScheme();
 
   const cardStyle = modifier()
     .backgroundColor(colors.surface)
@@ -401,11 +403,12 @@ function ThemedCard({ title, description }) {
 ### Conditional Styling with Theme
 
 ```typescript
-import { useSyncExternalStore } from "react";
+import React from "react";
+import { Pressable } from "react-native";
 import { useColorScheme } from "react-native-modifier";
 
 function MyButton({ isActive }) {
-  const colors = useColorScheme(useSyncExternalStore);
+  const colors = useColorScheme();
 
   const buttonStyle = modifier()
     .backgroundColor(
@@ -423,11 +426,12 @@ function MyButton({ isActive }) {
 ### Error Banner Component
 
 ```typescript
-import { useSyncExternalStore } from "react";
+import React from "react";
+import { View, Text } from "react-native";
 import { useColorScheme } from "react-native-modifier";
 
 function ErrorBanner({ message }) {
-  const colors = useColorScheme(useSyncExternalStore);
+  const colors = useColorScheme();
 
   const bannerStyle = modifier()
     .backgroundColor(colors.errorContainer)

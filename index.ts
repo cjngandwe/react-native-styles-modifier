@@ -33,6 +33,7 @@ export { ModifierWithTheme, createModifier } from "./modifier-theme.ts";
 
 // Color scheme hooks (for reactive theme access)
 export {
+  initializeColorScheme,
   useColorScheme,
   useThemeMode,
   useThemeToggle,

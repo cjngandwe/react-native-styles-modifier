@@ -6,10 +6,29 @@ type UseSyncExternalStore = <T>(
   getSnapshot: () => T,
 ) => T;
 
-// Hook to get reactive color scheme
-export function useColorScheme(
+// Global reference to useSyncExternalStore - must be initialized
+let globalUseSyncExternalStore: UseSyncExternalStore | null = null;
+
+// Initialize the color scheme system with React's useSyncExternalStore
+export function initializeColorScheme(
   useSyncExternalStore: UseSyncExternalStore,
-): ColorScheme {
+): void {
+  globalUseSyncExternalStore = useSyncExternalStore;
+}
+
+// Internal helper to get useSyncExternalStore with error handling
+function getUseSyncExternalStore(): UseSyncExternalStore {
+  if (!globalUseSyncExternalStore) {
+    throw new Error(
+      "Color scheme hooks not initialized. Call initializeColorScheme(useSyncExternalStore) before using theme hooks.",
+    );
+  }
+  return globalUseSyncExternalStore;
+}
+
+// Hook to get reactive color scheme
+export function useColorScheme(): ColorScheme {
+  const useSyncExternalStore = getUseSyncExternalStore();
   const themeManager = getThemeManager();
 
   const subscribe = (onStoreChange: () => void) => {
@@ -24,9 +43,8 @@ export function useColorScheme(
 }
 
 // Hook to get theme mode
-export function useThemeMode(
-  useSyncExternalStore: UseSyncExternalStore,
-): ThemeMode {
+export function useThemeMode(): ThemeMode {
+  const useSyncExternalStore = getUseSyncExternalStore();
   const themeManager = getThemeManager();
 
   const subscribe = (onStoreChange: () => void) => {
