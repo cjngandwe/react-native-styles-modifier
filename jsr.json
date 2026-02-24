@@ -1,0 +1,6 @@
+{
+  "name": "@rnative-modifier/react-native-modifier-build",
+  "version": "0.1.1",
+  "license": "MIT",
+  "exports": "./index.ts"
+}
