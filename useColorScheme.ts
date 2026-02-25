@@ -30,6 +30,23 @@ function getUseSyncExternalStore(): UseSyncExternalStore {
   return globalUseSyncExternalStore;
 }
 
+// Stable references hoisted out of the hook to avoid re-subscriptions
+const _subscribe = (onStoreChange: () => void): (() => void) => {
+  return getThemeManager().subscribe(() => onStoreChange());
+};
+const _getColorSnapshot = (): CustomColorScheme => {
+  return getThemeManager().getColorScheme() as CustomColorScheme;
+};
+const _getModeSnapshot = (): ThemeMode => {
+  return getThemeManager().getThemeMode();
+};
+const _toggleTheme = (): void => {
+  getThemeManager().toggleTheme();
+};
+const _setTheme = (mode: ThemeMode): void => {
+  getThemeManager().setTheme(mode);
+};
+
 // Consolidated hook that returns everything theme-related
 // This is the primary way to access theme in components
 export function useModifierTheme(): {
@@ -39,40 +56,14 @@ export function useModifierTheme(): {
   setTheme: (mode: ThemeMode) => void;
 } {
   const useSyncExternalStore = getUseSyncExternalStore();
-  const themeManager = getThemeManager();
 
-  // Get reactive colors
-  const subscribe = (onStoreChange: () => void) => {
-    return themeManager.subscribe(() => onStoreChange());
-  };
-
-  const getColorSnapshot = () => {
-    return themeManager.getColorScheme();
-  };
-
-  const getModeSnapshot = () => {
-    return themeManager.getThemeMode();
-  };
-
-  const colors = useSyncExternalStore(
-    subscribe,
-    getColorSnapshot,
-  ) as CustomColorScheme;
-  const mode = useSyncExternalStore(subscribe, getModeSnapshot);
-
-  // Theme control functions
-  const toggleTheme = () => {
-    themeManager.toggleTheme();
-  };
-
-  const setTheme = (newMode: ThemeMode) => {
-    themeManager.setTheme(newMode);
-  };
+  const colors = useSyncExternalStore(_subscribe, _getColorSnapshot);
+  const mode = useSyncExternalStore(_subscribe, _getModeSnapshot);
 
   return {
     colors,
     mode,
-    toggleTheme,
-    setTheme,
+    toggleTheme: _toggleTheme,
+    setTheme: _setTheme,
   };
 }

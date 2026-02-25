@@ -2,6 +2,8 @@
 // Using DimensionValue to match React Native's type system
 type DimensionValue = number | `${number}%` | "auto";
 
+const _buildCache = new Map<string, ViewStyle & TextStyle>();
+
 export interface ViewStyle {
   alignItems?: "center" | "flex-start" | "flex-end" | "stretch" | "baseline";
   alignSelf?:
@@ -55,7 +57,7 @@ export interface ViewStyle {
   borderStyle?: "solid" | "dotted" | "dashed";
   borderColor?: string;
   aspectRatio?: number;
-  [key: string]: any;
+  opacity?: number;
 }
 
 export interface TextStyle extends ViewStyle {
@@ -74,7 +76,6 @@ export interface TextStyle extends ViewStyle {
   fontSize?: number;
   color?: string;
   textAlign?: "auto" | "left" | "right" | "center" | "justify";
-  [key: string]: any;
 }
 
 export interface StyleSheetLike {
@@ -114,7 +115,7 @@ export interface RootStyle {
 }
 
 export class Modifier<T extends StyleSheetLike = StyleSheetLike> {
-  private styles: ViewStyle & TextStyle = {};
+  protected styles: ViewStyle & TextStyle = {};
   private root: T;
 
   constructor(root: T) {
@@ -299,9 +300,15 @@ export class Modifier<T extends StyleSheetLike = StyleSheetLike> {
   }
 
   build(): ViewStyle & TextStyle {
+    const cacheKey = JSON.stringify(this.styles);
+    const cached = _buildCache.get(cacheKey);
+    if (cached) return cached;
+
     const style = this.root.create({
       root: this.styles,
     });
-    return style.root;
+    const result = Object.freeze(style.root) as ViewStyle & TextStyle;
+    _buildCache.set(cacheKey, result);
+    return result;
   }
 }

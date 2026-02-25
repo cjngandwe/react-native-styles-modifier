@@ -1,6 +1,17 @@
 import { Modifier, StyleSheetLike } from "./modifier.ts";
 import { DesignTokens, TokenProvider, defaultTokens } from "./tokens.ts";
 
+const _tokenProviderCache = new WeakMap<DesignTokens, TokenProvider>();
+
+function getOrCreateTokenProvider(tokens: DesignTokens): TokenProvider {
+  let provider = _tokenProviderCache.get(tokens);
+  if (!provider) {
+    provider = new TokenProvider(tokens);
+    _tokenProviderCache.set(tokens, provider);
+  }
+  return provider;
+}
+
 // Extended Modifier class with token support
 export class ModifierWithTheme<
   T extends StyleSheetLike = StyleSheetLike,
@@ -9,7 +20,7 @@ export class ModifierWithTheme<
 
   constructor(root: T, tokens: DesignTokens = defaultTokens) {
     super(root);
-    this.tokenProvider = new TokenProvider(tokens);
+    this.tokenProvider = getOrCreateTokenProvider(tokens);
   }
 
   // Token-based spacing methods
@@ -117,9 +128,9 @@ export class ModifierWithTheme<
   }
 
   // Token-based shadow method
-  shadowToken(key: keyof DesignTokens["shadows"]): Modifier<T> {
+  shadowToken(key: keyof DesignTokens["shadows"]): this {
     const shadow = this.tokenProvider.getShadow(key);
-    Object.assign(this["styles"], shadow);
+    Object.assign(this.styles, shadow);
     return this;
   }
 
