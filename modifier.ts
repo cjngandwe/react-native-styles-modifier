@@ -278,12 +278,7 @@ export class Modifier {
   }
 }
 
-const modifier = new Modifier();
-const modifier3 = new Modifier();
-const modifier2 = new Modifier();
-
-console.log(
-  modifier.padding({ bottom: 80, horizontal: 30 }).margin(10).build("card"),
-);
-console.log(modifier2.padding(10).margin({ top: 10 }).build("popdf"));
-console.log(modifier3.borderColor("red").build("container"));
+//Factory
+export function createModifier() {
+  return new Modifier();
+}
