@@ -2,6 +2,15 @@
 // Using DimensionValue to match React Native's type system
 type DimensionValue = number | `${number}%` | "auto";
 
+type Space = {
+  vertical: number;
+  bottom: number;
+  top: number;
+  horizontal: number;
+  left: number;
+  right: number;
+};
+type LayoutSpace = Partial<Space>;
 export interface ViewStyle {
   alignItems?: "center" | "flex-start" | "flex-end" | "stretch" | "baseline";
   alignSelf?:
@@ -76,6 +85,7 @@ export interface TextStyle extends ViewStyle {
   textAlign?: "auto" | "left" | "right" | "center" | "justify";
 }
 
+type ModifierStyle = TextStyle & ViewStyle;
 export interface StyleSheetLike {
   create<T extends Record<string, any>>(styles: T): T;
 }
@@ -113,10 +123,24 @@ export interface RootStyle {
 }
 
 export class Modifier {
-  protected styles: ViewStyle & TextStyle = {};
+  protected styles: ModifierStyle = {};
 
+  private parseSpaceStyleObject(
+    value: number | LayoutSpace,
+    target = "padding",
+  ) {
+    if (typeof value === "number") this.styles.padding = value;
+    const keys = Object.entries(value);
+    if (!keys.length || Array.isArray(value)) return;
+    for (const [key, value] of keys as [keyof LayoutSpace, number][]) {
+      const propertyName = `${target}${key?.replace(/^./, (char) => char.toUpperCase())}`;
+      if (value !== undefined) {
+        (this.styles as Record<string, number>)[propertyName] = value;
+      }
+    }
+  }
   //FLEX
-  alignItems(value: AlignItems): this {
+  alignItems(value: AlignItems): Modifier {
     this.styles.alignItems = value;
     return this;
   }
@@ -150,62 +174,14 @@ export class Modifier {
   }
 
   //PADDING
-  padding(value: number): this {
-    this.styles.padding = value;
-    return this;
-  }
-  paddingVertical(value: number): this {
-    this.styles.paddingVertical = value;
-    return this;
-  }
-  paddingHorizontal(value: number): this {
-    this.styles.paddingHorizontal = value;
-    return this;
-  }
-  paddingLeft(value: number): this {
-    this.styles.paddingLeft = value;
-    return this;
-  }
-  paddingRight(value: number): this {
-    this.styles.paddingRight = value;
-    return this;
-  }
-  paddingTop(value: number): this {
-    this.styles.paddingTop = value;
-    return this;
-  }
-  paddingBottom(value: number): this {
-    this.styles.paddingBottom = value;
+  padding(value: number | LayoutSpace): Modifier {
+    this.parseSpaceStyleObject(value, "padding");
     return this;
   }
 
   //MARGIN
-  margin(value: number): this {
-    this.styles.margin = value;
-    return this;
-  }
-  marginVertical(value: number): this {
-    this.styles.marginVertical = value;
-    return this;
-  }
-  marginHorizontal(value: number): this {
-    this.styles.marginHorizontal = value;
-    return this;
-  }
-  marginLeft(value: number): this {
-    this.styles.marginLeft = value;
-    return this;
-  }
-  marginRight(value: number): this {
-    this.styles.marginRight = value;
-    return this;
-  }
-  marginTop(value: number): this {
-    this.styles.marginTop = value;
-    return this;
-  }
-  marginBottom(value: number): this {
-    this.styles.marginBottom = value;
+  margin(value: number | LayoutSpace): Modifier {
+    this.parseSpaceStyleObject(value, "margin");
     return this;
   }
   backgroundColor(value: string): this {
@@ -292,11 +268,12 @@ export class Modifier {
     return this;
   }
 
-  build(KEY_LOG?: string): ViewStyle & TextStyle {
+  build(KEY_LOG?: string): ModifierStyle {
+    //KEY_LOG For Debugging Only
     KEY_LOG &&
       typeof KEY_LOG === "string" &&
       console.info("BUILD FOR:", KEY_LOG?.toLocaleUpperCase());
-    const result = Object.freeze(this.styles) as ViewStyle & TextStyle;
+    const result = Object.freeze(this.styles) as ModifierStyle;
     return result;
   }
 }
@@ -305,6 +282,8 @@ const modifier = new Modifier();
 const modifier3 = new Modifier();
 const modifier2 = new Modifier();
 
-console.log(modifier.padding(10).margin(10).build("card"));
-console.log(modifier2.padding(10).margin(10).build("popdf"));
+console.log(
+  modifier.padding({ bottom: 80, horizontal: 30 }).margin(10).build("card"),
+);
+console.log(modifier2.padding(10).margin({ top: 10 }).build("popdf"));
 console.log(modifier3.borderColor("red").build("container"));

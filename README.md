@@ -1,6 +1,6 @@
 # React Native Modifier
 
-A fluent, type-safe style builder for React Native inspired by Jetpack Compose. Write styles with a chainable API, design tokens, and built-in light/dark theme support - all with zero dependencies and zero performance overhead.
+A fluent, type-safe style builder for React Native inspired by Jetpack Compose. Write styles with a chainable API, design tokens, and built-in light/dark theme support - all with zero dependencies.
 
 ## Features
 

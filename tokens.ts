@@ -1,7 +1,6 @@
 // Design tokens interface
 export interface DesignTokens {
   spacing: Record<string, number>;
-  colors: Record<string, string>;
   borderRadius: Record<string, number>;
   fontSize: Record<string, number>;
   fontWeight: Record<
@@ -39,19 +38,6 @@ export const defaultTokens: DesignTokens = {
     lg: 24,
     xl: 32,
     xxl: 48,
-  },
-  colors: {
-    primary: "#0a7ea4",
-    secondary: "#6c757d",
-    success: "#28a745",
-    danger: "#dc3545",
-    warning: "#ffc107",
-    info: "#17a2b8",
-    light: "#f8f9fa",
-    dark: "#343a40",
-    white: "#ffffff",
-    black: "#000000",
-    transparent: "transparent",
   },
   borderRadius: {
     none: 0,
@@ -115,10 +101,6 @@ export class TokenProvider {
   // Helper methods to get token values
   getSpacing(key: keyof DesignTokens["spacing"]): number {
     return this.tokens.spacing[key];
-  }
-
-  getColor(key: keyof DesignTokens["colors"]): string {
-    return this.tokens.colors[key];
   }
 
   getBorderRadius(key: keyof DesignTokens["borderRadius"]): number {

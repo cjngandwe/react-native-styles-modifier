@@ -1,4 +1,4 @@
-import { Modifier, StyleSheetLike } from "./modifier.ts";
+import { Modifier } from "./modifier.ts";
 import { DesignTokens, TokenProvider, defaultTokens } from "./tokens.ts";
 
 const _tokenProviderCache = new WeakMap<DesignTokens, TokenProvider>();
@@ -33,33 +33,33 @@ export class ModifierWithTheme extends Modifier {
   }
 
   paddingVerticalToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.paddingVertical(value);
+    const vertical = this.tokenProvider.getSpacing(key);
+    return this.padding({ vertical });
   }
 
   paddingHorizontalToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.paddingHorizontal(value);
+    const horizontal = this.tokenProvider.getSpacing(key);
+    return this.padding({ horizontal });
   }
 
   paddingLeftToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.paddingLeft(value);
+    const left = this.tokenProvider.getSpacing(key);
+    return this.padding({ left });
   }
 
   paddingRightToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.paddingRight(value);
+    const right = this.tokenProvider.getSpacing(key);
+    return this.padding({ right });
   }
 
   paddingTopToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.paddingTop(value);
+    const top = this.tokenProvider.getSpacing(key);
+    return this.padding({ top });
   }
 
   paddingBottomToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.paddingBottom(value);
+    const bottom = this.tokenProvider.getSpacing(key);
+    return this.padding({ bottom });
   }
 
   marginToken(key: keyof DesignTokens["spacing"]): Modifier {
@@ -68,49 +68,38 @@ export class ModifierWithTheme extends Modifier {
   }
 
   marginVerticalToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.marginVertical(value);
+    const vertical = this.tokenProvider.getSpacing(key);
+    return this.margin({ vertical });
   }
 
   marginHorizontalToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.marginHorizontal(value);
+    const horizontal = this.tokenProvider.getSpacing(key);
+    return this.margin({ horizontal });
   }
 
   marginLeftToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.marginLeft(value);
+    const left = this.tokenProvider.getSpacing(key);
+    return this.margin({ left });
   }
 
   marginRightToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.marginRight(value);
+    const right = this.tokenProvider.getSpacing(key);
+    return this.margin({ right });
   }
 
   marginTopToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.marginTop(value);
+    const top = this.tokenProvider.getSpacing(key);
+    return this.margin({ top });
   }
 
   marginBottomToken(key: keyof DesignTokens["spacing"]): Modifier {
-    const value = this.tokenProvider.getSpacing(key);
-    return this.marginBottom(value);
+    const bottom = this.tokenProvider.getSpacing(key);
+    return this.margin({ bottom });
   }
 
   gapToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.gap(value);
-  }
-
-  // Token-based color methods (legacy support)
-  backgroundColorToken(key: keyof DesignTokens["colors"]): Modifier {
-    const value = this.tokenProvider.getColor(key);
-    return this.backgroundColor(value);
-  }
-
-  borderColorToken(key: keyof DesignTokens["colors"]): Modifier {
-    const value = this.tokenProvider.getColor(key);
-    return this.borderColor(value);
   }
 
   // Token-based border radius methods
