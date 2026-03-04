@@ -13,116 +13,114 @@ function getOrCreateTokenProvider(tokens: DesignTokens): TokenProvider {
 }
 
 // Extended Modifier class with token support
-export class ModifierWithTheme<
-  T extends StyleSheetLike = StyleSheetLike,
-> extends Modifier<T> {
+export class ModifierWithTheme extends Modifier {
   protected tokenProvider: TokenProvider;
 
-  constructor(root: T, tokens: DesignTokens = defaultTokens) {
-    super(root);
+  constructor(tokens: DesignTokens = defaultTokens) {
+    super();
     this.tokenProvider = getOrCreateTokenProvider(tokens);
   }
 
   // Token-based spacing methods
-  spacingToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  spacingToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.padding(value);
   }
 
-  paddingToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.padding(value);
   }
 
-  paddingVerticalToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingVerticalToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.paddingVertical(value);
   }
 
-  paddingHorizontalToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingHorizontalToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.paddingHorizontal(value);
   }
 
-  paddingLeftToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingLeftToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.paddingLeft(value);
   }
 
-  paddingRightToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingRightToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.paddingRight(value);
   }
 
-  paddingTopToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingTopToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.paddingTop(value);
   }
 
-  paddingBottomToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  paddingBottomToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.paddingBottom(value);
   }
 
-  marginToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.margin(value);
   }
 
-  marginVerticalToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginVerticalToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.marginVertical(value);
   }
 
-  marginHorizontalToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginHorizontalToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.marginHorizontal(value);
   }
 
-  marginLeftToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginLeftToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.marginLeft(value);
   }
 
-  marginRightToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginRightToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.marginRight(value);
   }
 
-  marginTopToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginTopToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.marginTop(value);
   }
 
-  marginBottomToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  marginBottomToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.marginBottom(value);
   }
 
-  gapToken(key: keyof DesignTokens["spacing"]): Modifier<T> {
+  gapToken(key: keyof DesignTokens["spacing"]): Modifier {
     const value = this.tokenProvider.getSpacing(key);
     return this.gap(value);
   }
 
   // Token-based color methods (legacy support)
-  backgroundColorToken(key: keyof DesignTokens["colors"]): Modifier<T> {
+  backgroundColorToken(key: keyof DesignTokens["colors"]): Modifier {
     const value = this.tokenProvider.getColor(key);
     return this.backgroundColor(value);
   }
 
-  borderColorToken(key: keyof DesignTokens["colors"]): Modifier<T> {
+  borderColorToken(key: keyof DesignTokens["colors"]): Modifier {
     const value = this.tokenProvider.getColor(key);
     return this.borderColor(value);
   }
 
   // Token-based border radius methods
-  borderRadiusToken(key: keyof DesignTokens["borderRadius"]): Modifier<T> {
+  borderRadiusToken(key: keyof DesignTokens["borderRadius"]): Modifier {
     const value = this.tokenProvider.getBorderRadius(key);
     return this.borderRadius(value);
   }
 
   // Token-based font methods
-  fontWeightToken(key: keyof DesignTokens["fontWeight"]): Modifier<T> {
+  fontWeightToken(key: keyof DesignTokens["fontWeight"]): Modifier {
     const value = this.tokenProvider.getFontWeight(key);
     return this.fontWeight(value);
   }
@@ -149,9 +147,6 @@ export class ModifierWithTheme<
 }
 
 // Factory function for easier usage
-export function createModifier<T extends StyleSheetLike>(
-  root: T,
-  tokens?: DesignTokens,
-): () => ModifierWithTheme<T> {
-  return () => new ModifierWithTheme(root, tokens);
+export function createModifier(tokens?: DesignTokens): () => ModifierWithTheme {
+  return () => new ModifierWithTheme(tokens);
 }

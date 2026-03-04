@@ -2,8 +2,6 @@
 // Using DimensionValue to match React Native's type system
 type DimensionValue = number | `${number}%` | "auto";
 
-const _buildCache = new Map<string, ViewStyle & TextStyle>();
-
 export interface ViewStyle {
   alignItems?: "center" | "flex-start" | "flex-end" | "stretch" | "baseline";
   alignSelf?:
@@ -114,13 +112,8 @@ export interface RootStyle {
   root: Record<string, string | number>;
 }
 
-export class Modifier<T extends StyleSheetLike = StyleSheetLike> {
+export class Modifier {
   protected styles: ViewStyle & TextStyle = {};
-  private root: T;
-
-  constructor(root: T) {
-    this.root = root;
-  }
 
   //FLEX
   alignItems(value: AlignItems): this {
@@ -299,16 +292,19 @@ export class Modifier<T extends StyleSheetLike = StyleSheetLike> {
     return this;
   }
 
-  build(): ViewStyle & TextStyle {
-    const cacheKey = JSON.stringify(this.styles);
-    const cached = _buildCache.get(cacheKey);
-    if (cached) return cached;
-
-    const style = this.root.create({
-      root: this.styles,
-    });
-    const result = Object.freeze(style.root) as ViewStyle & TextStyle;
-    _buildCache.set(cacheKey, result);
+  build(KEY_LOG?: string): ViewStyle & TextStyle {
+    KEY_LOG &&
+      typeof KEY_LOG === "string" &&
+      console.info("BUILD FOR:", KEY_LOG?.toLocaleUpperCase());
+    const result = Object.freeze(this.styles) as ViewStyle & TextStyle;
     return result;
   }
 }
+
+const modifier = new Modifier();
+const modifier3 = new Modifier();
+const modifier2 = new Modifier();
+
+console.log(modifier.padding(10).margin(10).build("card"));
+console.log(modifier2.padding(10).margin(10).build("popdf"));
+console.log(modifier3.borderColor("red").build("container"));
