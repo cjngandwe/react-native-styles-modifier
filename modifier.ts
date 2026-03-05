@@ -25,6 +25,9 @@ export class Modifier {
     this.isDev = isDev;
   }
 
+  /*
+    * This function will be used and improved in the next future release to shorten naming for layout styles
+
   private parseSpaceStyleObject(
     value: number | LayoutSpace,
     target = "padding",
@@ -39,6 +42,7 @@ export class Modifier {
       }
     }
   }
+    */
 
   alignItems(value: NonNullable<FlexStyle["alignItems"]>): this {
     this.styles.alignItems = value;
@@ -90,8 +94,8 @@ export class Modifier {
     return this;
   }
 
-  padding(value: number | LayoutSpace): this {
-    this.parseSpaceStyleObject(value, "padding");
+  padding(value: DimensionValue): this {
+    this.styles.padding = value;
     return this;
   }
 
@@ -165,8 +169,8 @@ export class Modifier {
     return this;
   }
 
-  margin(value: number | LayoutSpace): this {
-    this.parseSpaceStyleObject(value, "margin");
+  margin(value: DimensionValue): this {
+    this.margin(value);
     return this;
   }
 
