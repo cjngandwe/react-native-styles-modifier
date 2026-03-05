@@ -1,18 +1,21 @@
 // Core modifier
+export { Modifier, createModifier } from "./modifier.ts";
 export type {
-  Modifier,
   ViewStyle,
   TextStyle,
   StyleSheetLike,
-  createModifier,
+  ModifierStyle,
 } from "./modifier.ts";
 
-// Theme system
+// Theme system types
+export type {
+  ColorScheme,
+  ThemeMode,
+  ThemeManager,
+  ExternalStateManager,
+} from "./theme.ts";
+
 export {
-  type ColorScheme,
-  type ThemeMode,
-  type ThemeManager,
-  type ExternalStateManager,
   lightColorScheme,
   darkColorScheme,
   getThemeManager,
@@ -20,7 +23,4 @@ export {
   createExternalStateAdapter,
 } from "./theme.ts";
 
-// Modifier with theme support (recommended)
-
-// Color scheme hooks (for reactive theme access)
 export { initializeColorScheme, useModifierTheme } from "./useColorScheme.ts";
