@@ -26,23 +26,20 @@ export class Modifier {
   }
 
   /*
-    * This function will be used and improved in the next future release to shorten naming for layout styles
+  // This function will be used and improved in the next future release to shorten naming for layout styles
 
-  private parseSpaceStyleObject(
-    value: number | LayoutSpace,
-    target = "padding",
-  ) {
+  private parseSpaceStyleObject<T>(value: T, target = "") {
     if (typeof value === "number") this.styles.padding = value;
     const keys = Object.entries(value);
     if (!keys.length || Array.isArray(value)) return;
-    for (const [key, value] of keys as [keyof LayoutSpace, number][]) {
+    for (const [key, value] of keys as [keyof T, number][]) {
       const propertyName = `${target}${key?.replace(/^./, (char) => char.toUpperCase())}`;
       if (value !== undefined) {
         (this.styles as Record<string, number>)[propertyName] = value;
       }
     }
   }
-    */
+ */
 
   alignItems(value: NonNullable<FlexStyle["alignItems"]>): this {
     this.styles.alignItems = value;
