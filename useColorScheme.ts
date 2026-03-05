@@ -9,11 +9,32 @@ type UseSyncExternalStore = <T>(
 // Global reference to useSyncExternalStore - must be initialized
 let globalUseSyncExternalStore: UseSyncExternalStore | null = null;
 
-// Augmentable interface for custom color schemes
-// Users can extend this via module augmentation
+/**
+ * Augmentable interface for custom color schemes.
+ * Users can extend this via module augmentation to add custom color properties.
+ * @example
+ * ```ts
+ * declare module '@rnative-modifier/react-native-modifier-build' {
+ *   interface CustomColorScheme {
+ *     customColor: string;
+ *   }
+ * }
+ * ```
+ */
 export interface CustomColorScheme extends ColorScheme {}
 
-// Initialize the color scheme system with React's useSyncExternalStore
+/**
+ * Initializes the color scheme system with React's useSyncExternalStore.
+ * Must be called before using useModifierTheme hook.
+ * @param useSyncExternalStore - React's useSyncExternalStore hook
+ * @example
+ * ```ts
+ * import { useSyncExternalStore } from 'react';
+ * import { initializeColorScheme } from '@rnative-modifier/react-native-modifier-build';
+ *
+ * initializeColorScheme(useSyncExternalStore);
+ * ```
+ */
 export function initializeColorScheme(
   useSyncExternalStore: UseSyncExternalStore,
 ): void {
@@ -47,8 +68,26 @@ const _setTheme = (mode: ThemeMode): void => {
   getThemeManager().setTheme(mode);
 };
 
-// Consolidated hook that returns everything theme-related
-// This is the primary way to access theme in components
+/**
+ * React hook that provides access to the current theme colors, mode, and theme controls.
+ * This is the primary way to access theme in React components.
+ * @returns Object containing colors, mode, toggleTheme, and setTheme
+ * @example
+ * ```tsx
+ * function MyComponent() {
+ *   const { colors, mode, toggleTheme } = useModifierTheme();
+ *
+ *   return (
+ *     <View style={{ backgroundColor: colors.background }}>
+ *       <Text style={{ color: colors.onBackground }}>
+ *         Current mode: {mode}
+ *       </Text>
+ *       <Button onPress={toggleTheme} title="Toggle Theme" />
+ *     </View>
+ *   );
+ * }
+ * ```
+ */
 export function useModifierTheme(): {
   colors: CustomColorScheme;
   mode: ThemeMode;

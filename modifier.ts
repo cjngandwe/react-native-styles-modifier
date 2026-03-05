@@ -12,10 +12,18 @@ import type {
 
 export type { ViewStyle, TextStyle, ModifierStyle, StyleSheetLike };
 
+/**
+ * Root style interface for style objects.
+ */
 export interface RootStyle {
   root: Record<string, string | number>;
 }
 
+/**
+ * A fluent API builder for creating React Native styles with method chaining.
+ * Provides type-safe methods for all React Native style properties.
+ *
+ */
 export class Modifier {
   protected styles: ModifierStyle = {};
   private isDev: boolean;
@@ -40,66 +48,131 @@ export class Modifier {
   }
  */
 
+  /**
+   * Sets how flex items are aligned along the cross axis.
+   * @param value - Alignment value ('flex-start', 'flex-end', 'center', 'stretch', 'baseline')
+   * @returns The modifier instance for chaining
+   */
   alignItems(value: NonNullable<FlexStyle["alignItems"]>): this {
     this.styles.alignItems = value;
     return this;
   }
 
+  /**
+   * Sets how a flex item is aligned along the cross axis, overriding alignItems.
+   * @param value - Alignment value
+   * @returns The modifier instance for chaining
+   */
   alignSelf(value: NonNullable<FlexStyle["alignSelf"]>): this {
     this.styles.alignSelf = value;
     return this;
   }
 
+  /**
+   * Sets how flex lines are aligned in a multi-line flex container.
+   * @param value - Alignment value
+   * @returns The modifier instance for chaining
+   */
   alignContent(value: NonNullable<FlexStyle["alignContent"]>): this {
     this.styles.alignContent = value;
     return this;
   }
 
+  /**
+   * Sets how flex items are aligned along the main axis.
+   * @param value - Justification value ('flex-start', 'flex-end', 'center', 'space-between', 'space-around', 'space-evenly')
+   * @returns The modifier instance for chaining
+   */
   justifyContent(value: NonNullable<FlexStyle["justifyContent"]>): this {
     this.styles.justifyContent = value;
     return this;
   }
 
+  /**
+   * Sets the flex grow, shrink, and basis combined.
+   * @param value - Flex value (typically 0 or 1)
+   * @returns The modifier instance for chaining
+   */
   flex(value: number): this {
     this.styles.flex = value;
     return this;
   }
 
+  /**
+   * Sets the initial main size of a flex item.
+   * @param value - Dimension value (number or percentage string)
+   * @returns The modifier instance for chaining
+   */
   flexBasis(value: DimensionValue): this {
     this.styles.flexBasis = value;
     return this;
   }
 
+  /**
+   * Sets the direction of the main axis ('row', 'column', 'row-reverse', 'column-reverse').
+   * @param value - Flex direction value
+   * @returns The modifier instance for chaining
+   */
   flexDirection(value: NonNullable<FlexStyle["flexDirection"]>): this {
     this.styles.flexDirection = value;
     return this;
   }
 
+  /**
+   * Sets how much a flex item will grow relative to other flex items.
+   * @param value - Grow factor (default is 0)
+   * @returns The modifier instance for chaining
+   */
   flexGrow(value: number): this {
     this.styles.flexGrow = value;
     return this;
   }
 
+  /**
+   * Sets how much a flex item will shrink relative to other flex items.
+   * @param value - Shrink factor (default is 1)
+   * @returns The modifier instance for chaining
+   */
   flexShrink(value: number): this {
     this.styles.flexShrink = value;
     return this;
   }
 
+  /**
+   * Sets whether flex items wrap onto multiple lines.
+   * @param value - Wrap value ('wrap', 'nowrap', 'wrap-reverse')
+   * @returns The modifier instance for chaining
+   */
   flexWrap(value: NonNullable<FlexStyle["flexWrap"]>): this {
     this.styles.flexWrap = value;
     return this;
   }
 
+  /**
+   * Sets padding for all sides.
+   * @param value - Padding value in pixels or percentage
+   * @returns The modifier instance for chaining
+   */
   padding(value: DimensionValue): this {
     this.styles.padding = value;
     return this;
   }
 
+  /**
+   * Sets padding for top and bottom.
+   * @param value - Padding value
+   * @returns The modifier instance for chaining
+   */
   paddingVertical(value: DimensionValue): this {
     this.styles.paddingVertical = value;
     return this;
   }
 
+  /**
+   * Sets padding for left and right.
+   * @param value - Padding value
+   * @returns The modifier instance for chaining
+   */
   paddingHorizontal(value: DimensionValue): this {
     this.styles.paddingHorizontal = value;
     return this;
@@ -165,8 +238,13 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets margin for all sides.
+   * @param value - Margin value in pixels or percentage
+   * @returns The modifier instance for chaining
+   */
   margin(value: DimensionValue): this {
-    this.margin(value);
+    this.styles.margin = value;
     return this;
   }
 
@@ -240,11 +318,21 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the background color.
+   * @param value - Color value (hex, rgb, rgba, or named color)
+   * @returns The modifier instance for chaining
+   */
   backgroundColor(value: ColorValue): this {
     this.styles.backgroundColor = value;
     return this;
   }
 
+  /**
+   * Sets the gap between flex items.
+   * @param value - Gap value
+   * @returns The modifier instance for chaining
+   */
   gap(value: number | string): this {
     this.styles.gap = value;
     return this;
@@ -260,11 +348,21 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the height.
+   * @param value - Height value
+   * @returns The modifier instance for chaining
+   */
   height(value: DimensionValue): this {
     this.styles.height = value;
     return this;
   }
 
+  /**
+   * Sets the width.
+   * @param value - Width value
+   * @returns The modifier instance for chaining
+   */
   width(value: DimensionValue): this {
     this.styles.width = value;
     return this;
@@ -290,6 +388,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets border radius for all corners.
+   * @param value - Radius value
+   * @returns The modifier instance for chaining
+   */
   borderRadius(value: number | string): this {
     this.styles.borderRadius = value;
     return this;
@@ -355,6 +458,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets border width for all sides.
+   * @param value - Border width in pixels
+   * @returns The modifier instance for chaining
+   */
   borderWidth(value: number): this {
     this.styles.borderWidth = value;
     return this;
@@ -395,6 +503,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets border color for all sides.
+   * @param value - Color value
+   * @returns The modifier instance for chaining
+   */
   borderColor(value: ColorValue): this {
     this.styles.borderColor = value;
     return this;
@@ -450,6 +563,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the positioning type ('absolute' or 'relative').
+   * @param value - Position value
+   * @returns The modifier instance for chaining
+   */
   position(value: NonNullable<FlexStyle["position"]>): this {
     this.styles.position = value;
     return this;
@@ -550,6 +668,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the opacity (0 to 1).
+   * @param value - Opacity value
+   * @returns The modifier instance for chaining
+   */
   opacity(value: number): this {
     this.styles.opacity = value;
     return this;
@@ -629,6 +752,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the text color.
+   * @param value - Color value
+   * @returns The modifier instance for chaining
+   */
   color(value: ColorValue): this {
     this.styles.color = value;
     return this;
@@ -639,6 +767,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the font size.
+   * @param value - Font size in pixels
+   * @returns The modifier instance for chaining
+   */
   fontSize(value: number): this {
     this.styles.fontSize = value;
     return this;
@@ -649,6 +782,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the font weight.
+   * @param value - Font weight ('normal', 'bold', '100'-'900')
+   * @returns The modifier instance for chaining
+   */
   fontWeight(value: NonNullable<TextStyle["fontWeight"]>): this {
     this.styles.fontWeight = value;
     return this;
@@ -669,6 +807,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Sets the text alignment.
+   * @param value - Alignment value ('left', 'right', 'center', 'justify')
+   * @returns The modifier instance for chaining
+   */
   textAlign(value: NonNullable<TextStyle["textAlign"]>): this {
     this.styles.textAlign = value;
     return this;
@@ -738,6 +881,19 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Conditionally applies styles based on a boolean condition.
+   * @param condition - Boolean condition to check
+   * @param callback - Function that receives the modifier and returns it with applied styles
+   * @returns The modifier instance for chaining
+   * @example
+   * ```ts
+   * createModifier()
+   *   .padding(16)
+   *   .applyIf(isActive, m => m.backgroundColor('blue'))
+   *   .build();
+   * ```
+   */
   applyIf(condition: boolean, callback: (modifier: this) => this): this {
     if (condition) {
       return callback(this);
@@ -745,6 +901,11 @@ export class Modifier {
     return this;
   }
 
+  /**
+   * Builds and freezes the final style object.
+   * @param KEY_LOG - Optional key for development logging
+   * @returns Frozen style object
+   */
   build(KEY_LOG?: string): ModifierStyle {
     if (this.isDev && KEY_LOG && typeof KEY_LOG === "string") {
       console.info("DEV BUILD LOG FOR:", KEY_LOG.toLocaleUpperCase());
@@ -753,7 +914,18 @@ export class Modifier {
   }
 }
 
-//Factory
+/**
+ * Factory function to create a new Modifier instance.
+ * @param isDev - Enable development mode with console logging
+ * @returns A new Modifier instance
+ * @example
+ * ```ts
+ * const style = createModifier()
+ *   .padding(16)
+ *   .backgroundColor('#fff')
+ *   .build();
+ * ```
+ */
 export function createModifier(isDev: boolean = false): Modifier {
   return new Modifier(isDev);
 }

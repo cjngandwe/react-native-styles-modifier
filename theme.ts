@@ -1,4 +1,7 @@
-// Theme color scheme inspired by Jetpack Compose
+/**
+ * Theme color scheme interface inspired by Jetpack Compose Material Design.
+ * Provides a comprehensive set of semantic colors for building themed UIs.
+ */
 export interface ColorScheme {
   // Primary colors
   primary: string;
@@ -46,7 +49,9 @@ export interface ColorScheme {
   scrim: string;
 }
 
-// Default light color scheme
+/**
+ * Default light color scheme with Material Design 3 colors.
+ */
 export const lightColorScheme: ColorScheme = {
   primary: "#6750A4",
   onPrimary: "#FFFFFF",
@@ -86,7 +91,9 @@ export const lightColorScheme: ColorScheme = {
   scrim: "#000000",
 };
 
-// Default dark color scheme
+/**
+ * Default dark color scheme with Material Design 3 colors.
+ */
 export const darkColorScheme: ColorScheme = {
   primary: "#D0BCFF",
   onPrimary: "#381E72",
@@ -126,7 +133,9 @@ export const darkColorScheme: ColorScheme = {
   scrim: "#000000",
 };
 
-// Theme mode type
+/**
+ * Theme mode type - either 'light' or 'dark'.
+ */
 export type ThemeMode = "light" | "dark";
 
 // Listener type for theme changes
@@ -135,14 +144,30 @@ type ThemeChangeListener<T extends ColorScheme = ColorScheme> = (
   mode: ThemeMode,
 ) => void;
 
-// External state manager interface
+/**
+ * External state manager interface for integrating with state management libraries.
+ * Compatible with React's useSyncExternalStore or custom state solutions.
+ * @template T - The type of state being managed
+ */
 export interface ExternalStateManager<T> {
   getState: () => T;
   setState: (value: T) => void;
   subscribe: (listener: (value: T) => void) => () => void;
 }
 
-// Theme manager class with generic color scheme support
+/**
+ * Theme manager class for managing color schemes and theme mode.
+ * Supports custom color schemes, external state management, and theme change listeners.
+ * @template T - Custom color scheme type extending ColorScheme
+ * @example
+ * ```ts
+ * const theme = new ThemeManager('light');
+ * theme.subscribe((colors, mode) => {
+ *   console.log('Theme changed:', mode);
+ * });
+ * theme.toggleTheme();
+ * ```
+ */
 export class ThemeManager<T extends ColorScheme = ColorScheme> {
   private currentMode: ThemeMode = "light";
   private lightScheme: T;
@@ -162,7 +187,10 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
     this.darkScheme = { ...darkColorScheme, ...customDarkColors } as T;
   }
 
-  // Inject external state manager (e.g., from useExternalState or any state management)
+  /**
+   * Injects an external state manager to sync theme mode with external state.
+   * @param stateManager - External state manager instance
+   */
   injectExternalState(stateManager: ExternalStateManager<ThemeMode>) {
     // Unsubscribe from previous external state if exists
     if (this.unsubscribeExternal) {
@@ -181,13 +209,18 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
     });
   }
 
-  // Toggle between light and dark mode
+  /**
+   * Toggles between light and dark mode.
+   */
   toggleTheme() {
     const newMode: ThemeMode = this.currentMode === "light" ? "dark" : "light";
     this.setTheme(newMode);
   }
 
-  // Set specific theme mode
+  /**
+   * Sets a specific theme mode.
+   * @param mode - Theme mode to set ('light' or 'dark')
+   */
   setTheme(mode: ThemeMode) {
     this.currentMode = mode;
 
@@ -200,22 +233,36 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
     }
   }
 
-  // Get current theme mode
+  /**
+   * Gets the current theme mode.
+   * @returns Current theme mode
+   */
   getThemeMode(): ThemeMode {
     return this.currentMode;
   }
 
-  // Get current color scheme
+  /**
+   * Gets the current color scheme based on the active theme mode.
+   * @returns Current color scheme object
+   */
   getColorScheme(): T {
     return this.currentMode === "light" ? this.lightScheme : this.darkScheme;
   }
 
-  // Get specific color from current scheme
+  /**
+   * Gets a specific color value from the current color scheme.
+   * @param key - Color key from the color scheme
+   * @returns Color value as a string
+   */
   getColor(key: keyof T): string {
     return this.getColorScheme()[key] as string;
   }
 
-  // Subscribe to theme changes
+  /**
+   * Subscribes to theme changes.
+   * @param listener - Callback function invoked when theme changes
+   * @returns Unsubscribe function
+   */
   subscribe(listener: ThemeChangeListener<T>): () => void {
     this.listeners.add(listener);
 
@@ -233,7 +280,11 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
     });
   }
 
-  // Update color schemes
+  /**
+   * Updates the light and/or dark color schemes.
+   * @param newLightScheme - Partial light color scheme to merge
+   * @param newDarkScheme - Partial dark color scheme to merge
+   */
   updateColorSchemes(newLightScheme?: Partial<T>, newDarkScheme?: Partial<T>) {
     if (newLightScheme) {
       this.lightScheme = { ...this.lightScheme, ...newLightScheme };
@@ -246,7 +297,9 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
     this.notifyListeners();
   }
 
-  // Cleanup
+  /**
+   * Cleans up listeners and external state subscriptions.
+   */
   dispose() {
     if (this.unsubscribeExternal) {
       this.unsubscribeExternal();
@@ -258,7 +311,11 @@ export class ThemeManager<T extends ColorScheme = ColorScheme> {
 // Global theme manager instance
 let globalThemeManager: ThemeManager<any> | null = null;
 
-// Get or create global theme manager
+/**
+ * Gets or creates the global theme manager singleton.
+ * @template T - Custom color scheme type
+ * @returns Global ThemeManager instance
+ */
 export function getThemeManager<
   T extends ColorScheme = ColorScheme,
 >(): ThemeManager<T> {
@@ -268,8 +325,22 @@ export function getThemeManager<
   return globalThemeManager as ThemeManager<T>;
 }
 
-// Initialize theme manager with custom configuration
-// Only pass your custom colors - defaults are handled automatically
+/**
+ * Initializes the global theme manager with custom configuration.
+ * Only pass your custom colors - defaults are handled automatically.
+ * @template T - Custom color scheme type
+ * @param initialMode - Initial theme mode (default: 'light')
+ * @param customLightColors - Partial custom light color scheme
+ * @param customDarkColors - Partial custom dark color scheme
+ * @returns Initialized ThemeManager instance
+ * @example
+ * ```ts
+ * const theme = initializeTheme('dark', {
+ *   primary: '#FF5722',
+ *   background: '#FAFAFA'
+ * });
+ * ```
+ */
 export function initializeTheme<T extends ColorScheme = ColorScheme>(
   initialMode: ThemeMode = "light",
   customLightColors?: Partial<T>,
@@ -283,7 +354,14 @@ export function initializeTheme<T extends ColorScheme = ColorScheme>(
   return globalThemeManager;
 }
 
-// Helper to create external state manager adapter
+/**
+ * Helper to create an external state manager adapter.
+ * @template T - State type
+ * @param getState - Function to get current state
+ * @param setState - Function to set new state
+ * @param subscribe - Function to subscribe to state changes
+ * @returns ExternalStateManager instance
+ */
 export function createExternalStateAdapter<T>(
   getState: () => T,
   setState: (value: T) => void,
