@@ -4,12 +4,11 @@ import type {
   ColorValue,
   DimensionValue,
   ModifierStyle,
-  LayoutSpace,
   StyleSheetLike,
   FlexStyle,
   TransformsStyle,
   FontVariant,
-} from "./react-native-styles";
+} from "./react-native-styles.ts";
 
 export type { ViewStyle, TextStyle, ModifierStyle, StyleSheetLike };
 
