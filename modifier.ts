@@ -19,6 +19,11 @@ export interface RootStyle {
 
 export class Modifier {
   protected styles: ModifierStyle = {};
+  private isDev: boolean;
+
+  constructor(isDev: boolean = false) {
+    this.isDev = isDev;
+  }
 
   private parseSpaceStyleObject(
     value: number | LayoutSpace,
@@ -741,15 +746,14 @@ export class Modifier {
   }
 
   build(KEY_LOG?: string): ModifierStyle {
-    if (KEY_LOG && typeof KEY_LOG === "string") {
-      console.info("BUILD LOG FOR:", KEY_LOG.toLocaleUpperCase());
+    if (this.isDev && KEY_LOG && typeof KEY_LOG === "string") {
+      console.info("DEV BUILD LOG FOR:", KEY_LOG.toLocaleUpperCase());
     }
-    const result = Object.freeze(this.styles) as ModifierStyle;
-    return result;
+    return Object.freeze(this.styles) as ModifierStyle;
   }
 }
 
 //Factory
-export function createModifier() {
-  return new Modifier();
+export function createModifier(isDev: boolean = false) {
+  return new Modifier(isDev);
 }

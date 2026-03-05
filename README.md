@@ -127,6 +127,30 @@ function ThemedComponent() {
 }
 ```
 
+### Debugging Re-renders
+
+Track when styles are being rebuilt during development by passing `__DEV__`:
+
+```typescript
+// Pass __DEV__ to enable logging in development only
+const modifier = createModifier(__DEV__);
+
+// Use build() with a label to track rebuilds
+const containerStyle = modifier
+  .backgroundColor(colors.surface)
+  .padding(24)
+  .borderRadius(12)
+  .build("CONTAINER");
+
+// Console output (dev only): "BUILD LOG FOR: CONTAINER"
+```
+
+**Important:** Always pass `__DEV__` (React Native's global) instead of hardcoding `true` or `false`. This ensures:
+
+- ✅ Logging works in development
+- ✅ Zero logging in production builds
+- ✅ Automatic optimization by the bundler
+
 ### Conditional Styling
 
 Apply styles conditionally with the `applyIf` method:
