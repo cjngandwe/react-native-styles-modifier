@@ -754,6 +754,6 @@ export class Modifier {
 }
 
 //Factory
-export function createModifier(isDev: boolean = false) {
+export function createModifier(isDev: boolean = false): Modifier {
   return new Modifier(isDev);
 }
