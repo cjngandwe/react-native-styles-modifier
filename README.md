@@ -1,17 +1,27 @@
 # React Native Modifier
 
-A fluent, type-safe style builder for React Native inspired by Jetpack Compose. Write styles with a chainable API, design tokens, and built-in light/dark theme support - all with zero dependencies.
+**A fluent, chainable style builder for React Native** — inspired by [Material UI](https://mui.com/)'s sx prop and [Jetpack Compose](https://developer.android.com/jetpack/compose)'s Modifier pattern.
 
-## Features
+## Why This Exists
 
-- 🎨 **Fluent API**: Chain style methods for clean, readable code
-- 🌓 **Theme System**: Jetpack Compose-inspired color schemes with light/dark mode
-- 📦 **Zero Dependencies**: Pure TypeScript/JavaScript with no external packages
-- 🔒 **Type-Safe**: Full TypeScript support with proper type definitions
-- ⚡ **Performance-First**: Only mounted components re-render on theme changes
-- 🎯 **Conditional Styling**: Built-in support for conditional styles
-- 🎨 **Design Tokens**: Token system for consistent spacing, colors, shadows, and more
-- 🔌 **State Integration**: Connect with any state management (Zustand, Redux, Context, etc.)
+This library was born from a real need at a previous company. I loved working with React Native's `StyleSheet`, but I kept running into the same frustrations:
+
+- **Reusability was painful** — Sharing styles meant messy arrays or complex style composition
+- **Theming was cumbersome** — Switching colors required helper functions scattered everywhere
+- **No naming conventions** — Every developer had their own way of organizing styles
+- **Limited extensibility** — Adding custom design patterns meant duplicating code
+
+If you enjoy writing styles with objects but want **better reusability, built-in theming, and a consistent API**, this library is for you.
+
+## What You Get
+
+✨ **Chainable Style API** — Build styles fluently without worrying about object keys  
+🎨 **Built-in Theme System** — Colors, modes, and palettes ready to use (customizable)  
+🔧 **Extensible Modifier Class** — Add your own custom style methods once, use everywhere  
+📐 **Design Tokens** — Pre-configured spacing, border radius, font sizes, shadows, and more  
+🎯 **Zero Configuration** — Works out of the box, customize only what you need  
+📦 **Zero Dependencies** — Pure TypeScript, no external packages  
+⚡ **Type-Safe** — Full TypeScript support with autocomplete for all 121+ style properties
 
 ## Installation
 
@@ -19,491 +29,663 @@ A fluent, type-safe style builder for React Native inspired by Jetpack Compose. 
 npm install react-native-modifier
 # or
 yarn add react-native-modifier
+# or
+pnpm add react-native-modifier
 ```
 
 ## Quick Start
 
-### With Theme Support (Recommended)
+### Basic Usage (No Theme)
+
+The simplest way to use the library — just import and start chaining styles:
 
 ```typescript
-import React, { useSyncExternalStore } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
-import {
-  createModifier,
-  initializeTheme,
-  initializeColorScheme,
-  useModifierTheme
-} from "react-native-modifier";
+import { View, Text } from "react-native";
+import { createModifier } from "react-native-modifier";
 
-// Initialize once in your App.tsx or index.tsx
-initializeTheme('light');
-initializeColorScheme(useSyncExternalStore);
+// Create a modifier instance
+const modifier = createModifier();
 
-// Create modifier factory (outside component)
-const modifier = createModifier(StyleSheet);
-
-// Now use anywhere in your app!
 function MyComponent() {
-  // Get everything theme-related in one call
-  const { colors, mode, toggleTheme, setTheme } = useModifierTheme();
+  // Build styles with a fluent API
+  const containerStyle = modifier
+    .padding(16)
+    .backgroundColor("#ffffff")
+    .borderRadius(8)
+    .flexDirection("row")
+    .justifyContent("space-between")
+    .alignItems("center")
+    .build();
 
-  // Build styles with theme colors
-  const containerStyle = modifier()
+  const textStyle = modifier
+    .fontSize(16)
+    .fontWeight("600")
+    .color("#333333")
+    .build();
+
+  return (
+    <View style={containerStyle}>
+      <Text style={textStyle}>Hello, Modifier!</Text>
+    </View>
+  );
+}
+```
+
+### With Theme Support (Recommended)
+
+Unlock the full power with built-in theming. Initialize once in your app root:
+
+```typescript
+// App.tsx or index.tsx
+import { useSyncExternalStore } from "react";
+import { initializeTheme, initializeColorScheme } from "react-native-modifier";
+
+// Step 1: Initialize theme (light or dark)
+initializeTheme("light");
+
+// Step 2: Initialize color scheme with React's useSyncExternalStore
+initializeColorScheme(useSyncExternalStore);
+```
+
+Then use the theme anywhere in your app:
+
+```typescript
+import { View, Text, Button } from "react-native";
+import { createModifier, useModifierTheme } from "react-native-modifier";
+
+const modifier = createModifier();
+
+function ThemedComponent() {
+  // Get colors, mode, and theme controls in one hook
+  const { colors, mode, toggleTheme } = useModifierTheme();
+
+  // Option 1: Extract style to a variable
+  const containerStyle = modifier
     .backgroundColor(colors.surface)
-    .paddingToken('lg')
-    .borderRadiusToken('md')
+    .padding(24)
+    .borderRadius(12)
     .build();
 
   return (
     <View style={containerStyle}>
       <Text style={{ color: colors.onSurface }}>
-        Hello, themed world! Current mode: {mode}
+        Current theme: {mode}
       </Text>
       <Button title="Toggle Theme" onPress={toggleTheme} />
-      <Button title="Set Dark" onPress={() => setTheme('dark')} />
+
+      {/* Option 2: Inline style (great for one-off styles) */}
+      <View
+        style={modifier
+          .backgroundColor(colors.background)
+          .marginHorizontal(8)
+          .borderRadius(12)
+          .padding(12)
+          .build()}
+      />
     </View>
   );
 }
-```
-
-### Basic Usage (No Theme)
-
-```typescript
-import { StyleSheet } from "react-native";
-import { Modifier } from "react-native-modifier";
-
-const styles = new Modifier(StyleSheet)
-  .padding(16)
-  .backgroundColor("#fff")
-  .borderRadius(8)
-  .flexDirection("row")
-  .justifyContent("space-between")
-  .alignItems("center")
-  .build();
 ```
 
 ### Conditional Styling
 
-```typescript
-const buttonStyle = new Modifier(StyleSheet)
-  .padding(10)
-  .applyIf(isActive, (m) => m.backgroundColor("blue").borderRadius(10))
-  .applyIf(!isActive, (m) => m.backgroundColor("gray"))
-  .build();
-```
-
-## API Reference
-
-### Layout Methods
-
-- `flex(value: number)`
-- `flexDirection(value: "row" | "row-reverse" | "column" | "column-reverse")`
-- `flexWrap(value: "nowrap" | "wrap" | "wrap-reverse")`
-- `flexBasis(value: string | number)`
-- `alignItems(value: AlignItems)`
-- `alignSelf(value: AlignSelf)`
-- `alignContent(value: AlignContent)`
-- `justifyContent(value: JustifyContent)`
-
-### Spacing Methods
-
-- `padding(value: number)`
-- `paddingVertical(value: number)`
-- `paddingHorizontal(value: number)`
-- `paddingLeft/Right/Top/Bottom(value: number)`
-- `margin(value: number)`
-- `marginVertical(value: number)`
-- `marginHorizontal(value: number)`
-- `marginLeft/Right/Top/Bottom(value: number)`
-- `gap(value: number)`
-
-### Size Methods
-
-- `width(value: number)`
-- `height(value: number)`
-- `maxWidth(value: string | number)`
-- `maxHeight(value: string | number)`
-- `aspectRatio(value: number)`
-
-### Border Methods
-
-- `borderRadius(value: number)`
-- `borderWidth(value: number)`
-- `borderStyle(value: "solid" | "dotted" | "dashed")`
-- `borderColor(value: string)`
-
-### Color & Text Methods
-
-- `backgroundColor(value: string)`
-- `fontWeight(value: FontWeight)`
-
-### Utility Methods
-
-- `applyIf(condition: boolean, callback: (m: Modifier) => Modifier)` - Conditional styling
-- `build()` - Returns the final style object
-
-## Theme System
-
-Jetpack Compose-inspired theme system with automatic light/dark mode support.
-
-### Quick Example
+Apply styles conditionally with the `applyIf` method:
 
 ```typescript
-import { createModifier, getThemeManager } from "react-native-modifier";
-import { StyleSheet } from "react-native";
+const modifier = createModifier();
 
-const modifier = createModifier(StyleSheet);
+function TodoItem({ todo }) {
+  const { colors } = useModifierTheme();
 
-// Access theme colors
-const styles = modifier
-  .backgroundColor(modifier.colors.surface)
-  .paddingToken("lg")
-  .build();
-
-// Toggle theme
-getThemeManager().toggleTheme();
-```
-
-### Available Theme Colors
-
-The theme system provides 24 semantic colors following Material Design 3 guidelines:
-
-**Primary Colors**: `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer`  
-**Secondary Colors**: `secondary`, `onSecondary`, `secondaryContainer`, `onSecondaryContainer`  
-**Tertiary Colors**: `tertiary`, `onTertiary`, `tertiaryContainer`, `onTertiaryContainer`  
-**Error Colors**: `error`, `onError`, `errorContainer`, `onErrorContainer`  
-**Background**: `background`, `onBackground`  
-**Surface**: `surface`, `onSurface`, `surfaceVariant`, `onSurfaceVariant`  
-**Outline**: `outline`, `outlineVariant`  
-**Inverse**: `inverseSurface`, `inverseOnSurface`, `inversePrimary`  
-**Other**: `shadow`, `scrim`
-
-### Using Theme Colors in Components
-
-```typescript
-import React from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
-import {
-  createModifier,
-  useModifierTheme
-} from "react-native-modifier";
-
-const modifier = createModifier(StyleSheet);
-
-function ThemedCard({ title, description }) {
-  // Get everything theme-related in one call
-  const { colors, mode, toggleTheme } = useModifierTheme();
-
-  const cardStyle = modifier()
+  // Option 1: Extract to variable
+  const itemStyle = modifier
+    .padding(12)
+    .borderRadius(8)
     .backgroundColor(colors.surface)
-    .paddingToken('lg')
-    .borderRadiusToken('lg')
-    .shadowToken('md')
+    .applyIf(todo.completed, (m) =>
+      m.backgroundColor(colors.inversePrimary)
+    )
     .build();
 
-  const titleStyle = modifier()
-    .fontSize(18)
-    .fontWeightToken('bold')
-    .marginBottomToken('sm')
-    .build();
+  return <View style={itemStyle}>...</View>;
+}
 
+function TodoItemInline({ todo }) {
+  const { colors } = useModifierTheme();
+
+  // Option 2: Inline with conditional styling
   return (
-    <View style={cardStyle}>
-      <Text style={{ ...titleStyle, color: colors.onSurface }}>
-        {title}
-      </Text>
-      <Text style={{ color: colors.onSurfaceVariant }}>
-        {description}
-      </Text>
-      <Button title="Toggle Theme" onPress={toggleTheme} />
+    <View
+      style={modifier
+        .backgroundColor(colors.background)
+        .marginHorizontal(8)
+        .borderRadius(12)
+        .padding(12)
+        .applyIf(todo.completed, (m) =>
+          m.backgroundColor(colors.inversePrimary)
+        )
+        .build()}
+    >
+      <Text>{todo.title}</Text>
     </View>
   );
 }
 ```
 
-### Custom Color Schemes
+## Extending the Modifier Class
 
-You can extend the color scheme with your own custom color names while maintaining full TypeScript support. Use module augmentation to declare your custom colors once, then use them everywhere without type parameters:
+One of the most powerful features is the ability to extend the `Modifier` class with your own custom style methods. Define them once, use them everywhere.
 
-````typescript
-// types.ts - Declare your custom color names once
-declare module "react-native-modifier" {
-  interface CustomColorScheme {
-    red100: string;
-    red200: string;
-    blue100: string;
-    blue200: string;
-    brandPrimary: string;
-    brandSecondary: string;
+### Creating Custom Style Methods
+
+```typescript
+import { Modifier } from "react-native-modifier";
+
+// Extend the Modifier class with your custom methods
+class CustomModifier extends Modifier {
+  // Custom card style
+  card() {
+    this.styles.backgroundColor = "#ffffff";
+    this.styles.borderRadius = 12;
+    this.styles.padding = 16;
+    this.styles.shadowColor = "#000";
+    this.styles.shadowOffset = { width: 0, height: 2 };
+    this.styles.shadowOpacity = 0.1;
+    this.styles.shadowRadius = 8;
+    this.styles.elevation = 3;
+    return this;
+  }
+
+  // Custom button style
+  primaryButton() {
+    this.styles.backgroundColor = "#007AFF";
+    this.styles.paddingVertical = 12;
+    this.styles.paddingHorizontal = 24;
+    this.styles.borderRadius = 8;
+    this.styles.alignItems = "center";
+    this.styles.justifyContent = "center";
+    return this;
+  }
+
+  // Custom text preset
+  heading() {
+    this.styles.fontSize = 24;
+    this.styles.fontWeight = "bold";
+    this.styles.marginBottom = 8;
+    return this;
+  }
+
+  // Custom spacing using your design system
+  spacingLarge() {
+    this.styles.padding = 24;
+    return this;
   }
 }
 
-// theme.ts - Define ONLY your custom colors
-// All Material Design 3 colors are handled automatically!
-const lightColors = {
-  red100: "#FFEBEE",
-  red200: "#EF5350",
-  blue100: "#E3F2FD",
-  blue200: "#42A5F5",
-  brandPrimary: "#FF6B6B",
-  brandSecondary: "#4ECDC4",
-};
-
-const darkColors = {
-  red100: "#B71C1C",
-  red200: "#D32F2F",
-  blue100: "#0D47A1",
-  blue200: "#1976D2",
-  brandPrimary: "#FF8787",
-  brandSecondary: "#5FE3D8",
-};
-
-// App.tsx - Initialize with ONLY your custom colors
-import { useSyncExternalStore } from "react";
-import { initializeTheme, initializeColorScheme } from "react-native-modifier";
-
-// Pass only your custom colors - defaults are merged automatically!
-initializeTheme("light", lightColors, darkColors);
-initializeColorScheme(useSyncExternalStore);
-
-// MyComponent.tsx - Use anywhere!
-import { useModifierTheme } from "react-native-modifier";
-
-function MyComponent() {
-  // Get all colors: your custom ones + Material Design 3 defaults
-  const { colors, toggleTheme } = useModifierTheme();
-
-  return (
-    <View style={{ backgroundColor: colors.brandPrimary }}>
-      <Text style={{ color: colors.red200 }}>Custom colors!</Text>
-      <Text style={{ color: colors.primary }}>Standard colors work too!</Text>
-      <Button title="Toggle Theme" onPress={toggleTheme} />
-    </View>
-  );
+// Create your custom factory function
+export function createCustomModifier() {
+  return new CustomModifier();
 }
-
-## Design Tokens
-
-Design tokens provide consistent spacing, colors, shadows, and other design values across your app.
-
-### Quick Example
-
-```typescript
-import { StyleSheet } from "react-native";
-import { createModifier } from "react-native-modifier";
-
-const modifier = createModifier(StyleSheet);
-
-const styles = modifier
-  .paddingToken("md") // Uses 16px from tokens
-  .marginToken("lg") // Uses 24px from tokens
-  .borderRadiusToken("lg") // Uses 12px from tokens
-  .shadowToken("md") // Applies medium shadow
-  .build();
-````
-
-### Available Tokens
-
-#### Spacing Tokens
-
-- `xs`: 4px
-- `sm`: 8px
-- `md`: 16px
-- `lg`: 24px
-- `xl`: 32px
-- `xxl`: 48px
-
-#### Border Radius Tokens
-
-- `none`: 0
-- `sm`: 4px
-- `md`: 8px
-- `lg`: 12px
-- `xl`: 16px
-- `full`: 9999px (fully rounded)
-
-#### Font Weight Tokens
-
-- `light`: 300
-- `normal`: 400
-- `medium`: 500
-- `semibold`: 600
-- `bold`: 700
-
-#### Shadow Tokens
-
-- `sm`: Small shadow with elevation 1
-- `md`: Medium shadow with elevation 5
-- `lg`: Large shadow with elevation 8
-- `xl`: Extra large shadow with elevation 12
-
-### Custom Tokens
-
-```typescript
-import { createModifier, DesignTokens } from "react-native-modifier";
-
-const customTokens: DesignTokens = {
-  spacing: {
-    xs: 2,
-    sm: 4,
-    md: 8,
-    lg: 16,
-    xl: 24,
-    xxl: 32,
-  },
-  borderRadius: {
-    none: 0,
-    sm: 2,
-    md: 4,
-    lg: 8,
-    xl: 12,
-    full: 9999,
-  },
-  // ... other token categories
-};
-
-const modifier = createModifier(StyleSheet, customTokens);
 ```
 
-## Key Benefits
-
-### 1. Zero Dependencies
-
-Pure TypeScript/JavaScript with no external packages. Works with any React Native setup.
-
-### 2. Zero Performance Overhead
-
-- No proxies, no middleware, just direct function calls
-- Only mounted components re-render on theme changes
-- Compiles to standard React Native styles
-
-### 3. Jetpack Compose-Inspired
-
-Familiar API if you've used Jetpack Compose:
+Now use your custom methods anywhere:
 
 ```typescript
-modifier.backgroundColor(modifier.colors.primary);
-```
+import { createCustomModifier } from "./CustomModifier";
 
-### 4. Flexible State Integration
+const modifier = createCustomModifier();
 
-Connect with any state management solution:
-
-- Built-in `useExternalState` (zero dependencies)
-- Zustand, Redux, MobX, Jotai, etc.
-- React Context
-- Any custom solution
-
-### 5. Type-Safe
-
-Full TypeScript support with autocomplete for all colors, tokens, and methods.
-
-## Complete Examples
-
-### Theme-Aware Card Component
-
-```typescript
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { createModifier, useColorScheme } from "react-native-modifier";
-
-const modifier = createModifier(StyleSheet);
-
-function ThemedCard({ title, description }) {
-  // Get reactive colors - component re-renders when theme changes
-  const colors = useColorScheme();
-
-  const cardStyle = modifier()
-    .backgroundColor(colors.surface)
-    .paddingToken('lg')
-    .borderRadiusToken('lg')
-    .shadowToken('md')
-    .marginToken('md')
-    .build();
+function MyScreen() {
+  const cardStyle = modifier.card().spacingLarge().build();
+  const buttonStyle = modifier.primaryButton().build();
+  const titleStyle = modifier.heading().color("#333").build();
 
   return (
     <View style={cardStyle}>
-      <Text style={{ color: colors.onSurface, fontSize: 18, fontWeight: 'bold' }}>
-        {title}
-      </Text>
-      <Text style={{ color: colors.onSurfaceVariant, marginTop: 8 }}>
-        {description}
-      </Text>
+      <Text style={titleStyle}>Welcome</Text>
+      <Pressable style={buttonStyle}>
+        <Text>Click Me</Text>
+      </Pressable>
     </View>
   );
 }
 ```
 
-### Conditional Styling with Theme
+### Custom Design Tokens
+
+Extend the Modifier with your design system's tokens:
 
 ```typescript
-import React from "react";
-import { Pressable } from "react-native";
-import { useColorScheme } from "react-native-modifier";
+class DesignSystemModifier extends Modifier {
+  // Spacing tokens
+  spacingXs() {
+    this.styles.padding = 4;
+    return this;
+  }
+  spacingSm() {
+    this.styles.padding = 8;
+    return this;
+  }
+  spacingMd() {
+    this.styles.padding = 16;
+    return this;
+  }
+  spacingLg() {
+    this.styles.padding = 24;
+    return this;
+  }
+  spacingXl() {
+    this.styles.padding = 32;
+    return this;
+  }
 
-function MyButton({ isActive }) {
-  const colors = useColorScheme();
+  // Border radius tokens
+  roundedSm() {
+    this.styles.borderRadius = 4;
+    return this;
+  }
+  roundedMd() {
+    this.styles.borderRadius = 8;
+    return this;
+  }
+  roundedLg() {
+    this.styles.borderRadius = 12;
+    return this;
+  }
+  roundedFull() {
+    this.styles.borderRadius = 9999;
+    return this;
+  }
 
-  const buttonStyle = modifier()
-    .backgroundColor(
-      isActive ? colors.primary : colors.surfaceVariant,
-    )
-    .paddingToken("md")
-    .borderRadiusToken("md")
-    .applyIf(isActive, (m) => m.shadowToken("lg"))
-    .build();
+  // Font size tokens
+  textXs() {
+    this.styles.fontSize = 12;
+    return this;
+  }
+  textSm() {
+    this.styles.fontSize = 14;
+    return this;
+  }
+  textBase() {
+    this.styles.fontSize = 16;
+    return this;
+  }
+  textLg() {
+    this.styles.fontSize = 18;
+    return this;
+  }
+  textXl() {
+    this.styles.fontSize = 20;
+    return this;
+  }
+  text2xl() {
+    this.styles.fontSize = 24;
+    return this;
+  }
 
-  return <Pressable style={buttonStyle}>...</Pressable>;
+  // Shadow tokens
+  shadowSm() {
+    this.styles.shadowColor = "#000";
+    this.styles.shadowOffset = { width: 0, height: 1 };
+    this.styles.shadowOpacity = 0.05;
+    this.styles.shadowRadius = 2;
+    this.styles.elevation = 1;
+    return this;
+  }
+
+  shadowMd() {
+    this.styles.shadowColor = "#000";
+    this.styles.shadowOffset = { width: 0, height: 2 };
+    this.styles.shadowOpacity = 0.1;
+    this.styles.shadowRadius = 4;
+    this.styles.elevation = 3;
+    return this;
+  }
+}
+
+export function createModifier() {
+  return new DesignSystemModifier();
 }
 ```
 
-### Error Banner Component
+Use your tokens:
 
 ```typescript
-import React from "react";
-import { View, Text } from "react-native";
-import { useColorScheme } from "react-native-modifier";
+const modifier = createModifier();
 
-function ErrorBanner({ message }) {
-  const colors = useColorScheme();
+const style = modifier.spacingMd().roundedLg().textBase().shadowMd().build();
+```
 
-  const bannerStyle = modifier()
-    .backgroundColor(colors.errorContainer)
-    .paddingToken('md')
-    .borderRadiusToken('sm')
-    .marginToken('md')
+## Theme System
+
+### Available Colors
+
+24 semantic colors following Material Design 3 guidelines:
+
+| Category       | Colors                                                                   |
+| -------------- | ------------------------------------------------------------------------ |
+| **Primary**    | `primary`, `onPrimary`, `primaryContainer`, `onPrimaryContainer`         |
+| **Secondary**  | `secondary`, `onSecondary`, `secondaryContainer`, `onSecondaryContainer` |
+| **Tertiary**   | `tertiary`, `onTertiary`, `tertiaryContainer`, `onTertiaryContainer`     |
+| **Error**      | `error`, `onError`, `errorContainer`, `onErrorContainer`                 |
+| **Background** | `background`, `onBackground`                                             |
+| **Surface**    | `surface`, `onSurface`, `surfaceVariant`, `onSurfaceVariant`             |
+| **Outline**    | `outline`, `outlineVariant`                                              |
+| **Inverse**    | `inverseSurface`, `inverseOnSurface`, `inversePrimary`                   |
+| **Other**      | `shadow`, `scrim`                                                        |
+
+### Theme Controls
+
+```typescript
+const { colors, mode, toggleTheme, setTheme } = useModifierTheme();
+```
+
+- `colors` — Current color palette (light or dark)
+- `mode` — Current theme mode (`"light"` | `"dark"`)
+- `toggleTheme()` — Toggle between light/dark
+- `setTheme(mode)` — Set specific theme mode
+
+### Custom Colors
+
+Add your own brand colors:
+
+```typescript
+// Declare custom colors
+declare module "react-native-modifier" {
+  interface CustomColorScheme {
+    brandPrimary: string;
+    success: string;
+  }
+}
+
+// Initialize with custom colors (Material Design 3 colors included automatically)
+initializeTheme(
+  "light",
+  { brandPrimary: "#FF6B6B", success: "#51CF66" }, // light
+  { brandPrimary: "#FF8787", success: "#69DB7C" }, // dark
+);
+
+// Use anywhere
+const { colors } = useModifierTheme();
+modifier.backgroundColor(colors.brandPrimary).build();
+```
+
+## Complete API Reference
+
+The `Modifier` class provides **121+ style methods** covering all React Native StyleSheet properties.
+
+### Layout & Flexbox (20 methods)
+
+```typescript
+// Flex container
+.flex(1)
+.flexDirection("row" | "column" | "row-reverse" | "column-reverse")
+.flexWrap("wrap" | "nowrap" | "wrap-reverse")
+.flexGrow(1)
+.flexShrink(1)
+.flexBasis(100)
+
+// Alignment
+.alignItems("center" | "flex-start" | "flex-end" | "stretch" | "baseline")
+.alignSelf("auto" | "center" | "flex-start" | "flex-end" | "stretch" | "baseline")
+.alignContent("center" | "flex-start" | "flex-end" | "stretch" | "space-between" | "space-around" | "space-evenly")
+.justifyContent("center" | "flex-start" | "flex-end" | "space-between" | "space-around" | "space-evenly")
+
+// Spacing
+.gap(8)
+.rowGap(8)
+.columnGap(8)
+
+// Position
+.position("absolute" | "relative" | "static")
+.display("flex" | "none" | "contents")
+.overflow("visible" | "hidden" | "scroll")
+.direction("ltr" | "rtl" | "inherit")
+.boxSizing("border-box" | "content-box")
+.zIndex(10)
+```
+
+### Spacing - Padding (14 methods)
+
+```typescript
+.padding(16)
+.paddingVertical(16)
+.paddingHorizontal(16)
+.paddingTop(16)
+.paddingBottom(16)
+.paddingLeft(16)
+.paddingRight(16)
+.paddingStart(16)
+.paddingEnd(16)
+.paddingBlock(16)
+.paddingBlockStart(16)
+.paddingBlockEnd(16)
+.paddingInline(16)
+.paddingInlineStart(16)
+.paddingInlineEnd(16)
+```
+
+### Spacing - Margin (14 methods)
+
+```typescript
+.margin(16)
+.marginVertical(16)
+.marginHorizontal(16)
+.marginTop(16)
+.marginBottom(16)
+.marginLeft(16)
+.marginRight(16)
+.marginStart(16)
+.marginEnd(16)
+.marginBlock(16)
+.marginBlockStart(16)
+.marginBlockEnd(16)
+.marginInline(16)
+.marginInlineStart(16)
+.marginInlineEnd(16)
+```
+
+### Dimensions (6 methods)
+
+```typescript
+.width(100)
+.height(100)
+.minWidth(50)
+.minHeight(50)
+.maxWidth(200)
+.maxHeight(200)
+```
+
+### Positioning (13 methods)
+
+```typescript
+.top(0)
+.bottom(0)
+.left(0)
+.right(0)
+.start(0)
+.end(0)
+.inset(0)
+.insetBlock(0)
+.insetBlockStart(0)
+.insetBlockEnd(0)
+.insetInline(0)
+.insetInlineStart(0)
+.insetInlineEnd(0)
+```
+
+### Borders (25 methods)
+
+```typescript
+// Border width
+.borderWidth(1)
+.borderTopWidth(1)
+.borderBottomWidth(1)
+.borderLeftWidth(1)
+.borderRightWidth(1)
+.borderStartWidth(1)
+.borderEndWidth(1)
+
+// Border color
+.borderColor("#000")
+.borderTopColor("#000")
+.borderBottomColor("#000")
+.borderLeftColor("#000")
+.borderRightColor("#000")
+.borderStartColor("#000")
+.borderEndColor("#000")
+.borderBlockColor("#000")
+.borderBlockStartColor("#000")
+.borderBlockEndColor("#000")
+
+// Border radius
+.borderRadius(8)
+.borderTopLeftRadius(8)
+.borderTopRightRadius(8)
+.borderBottomLeftRadius(8)
+.borderBottomRightRadius(8)
+.borderTopStartRadius(8)
+.borderTopEndRadius(8)
+.borderBottomStartRadius(8)
+.borderBottomEndRadius(8)
+.borderStartStartRadius(8)
+.borderStartEndRadius(8)
+.borderEndStartRadius(8)
+.borderEndEndRadius(8)
+
+// Border style
+.borderStyle("solid" | "dotted" | "dashed")
+.borderCurve("circular" | "continuous")
+```
+
+### Colors & Visual (5 methods)
+
+```typescript
+.backgroundColor("#fff")
+.opacity(0.5)
+.elevation(3)  // Android shadow
+.backfaceVisibility("visible" | "hidden")
+.cursor("auto" | "pointer")
+```
+
+### Shadows (4 methods)
+
+```typescript
+.shadowColor("#000")
+.shadowOffset({ width: 0, height: 2 })
+.shadowOpacity(0.25)
+.shadowRadius(3.84)
+```
+
+### Transforms (2 methods)
+
+```typescript
+.transform([{ rotate: "45deg" }, { scale: 1.2 }])
+.transformOrigin(["50%", "50%"])
+```
+
+### Outline (4 methods)
+
+```typescript
+.outlineColor("#000")
+.outlineOffset(2)
+.outlineStyle("solid" | "dotted" | "dashed")
+.outlineWidth(1)
+```
+
+### Text Styles (17 methods)
+
+```typescript
+.color("#000")
+.fontFamily("Arial")
+.fontSize(16)
+.fontStyle("normal" | "italic")
+.fontWeight("normal" | "bold" | "100" | "200" | ... | "900")
+.fontVariant(["small-caps"])
+.letterSpacing(1)
+.lineHeight(24)
+.textAlign("auto" | "left" | "right" | "center" | "justify")
+.textAlignVertical("auto" | "top" | "bottom" | "center")
+.textDecorationColor("#000")
+.textDecorationLine("none" | "underline" | "line-through" | "underline line-through")
+.textDecorationStyle("solid" | "double" | "dotted" | "dashed")
+.textShadowColor("#000")
+.textShadowOffset({ width: 0, height: 1 })
+.textShadowRadius(2)
+.textTransform("none" | "capitalize" | "uppercase" | "lowercase")
+.includeFontPadding(false)
+.userSelect("auto" | "none" | "text" | "contain" | "all")
+.verticalAlign("auto" | "top" | "bottom" | "middle")
+.writingDirection("auto" | "ltr" | "rtl")
+```
+
+### Utilities (2 methods)
+
+```typescript
+// Conditional styling
+.applyIf(condition, (m) => m.backgroundColor("red"))
+
+// Build final style object
+.build()
+```
+
+## Real-World Examples
+
+### Button with Variants
+
+```typescript
+function CustomButton({ title, variant = "primary", onPress }) {
+  const { colors } = useModifierTheme();
+
+  const buttonStyle = createModifier()
+    .paddingVertical(12)
+    .paddingHorizontal(24)
+    .borderRadius(8)
+    .alignItems("center")
+    .applyIf(variant === "primary", (m) => m.backgroundColor(colors.primary))
+    .applyIf(variant === "outline", (m) =>
+      m.backgroundColor("transparent").borderWidth(1).borderColor(colors.outline)
+    )
     .build();
 
   return (
-    <View style={bannerStyle}>
-      <Text style={{ color: colors.onErrorContainer, fontWeight: '600' }}>
-        ⚠️ {message}
-      </Text>
-    </View>
-  );}
+    <Pressable style={buttonStyle} onPress={onPress}>
+      <Text>{title}</Text>
+    </Pressable>
+  );
+}
 ```
 
-### Integration with Zustand
+## Advanced Usage
+
+### Responsive Styles
 
 ```typescript
-import create from "zustand";
+const { width } = Dimensions.get("window");
+const isSmall = width < 375;
+
+const style = createModifier()
+  .padding(16)
+  .applyIf(isSmall, (m) => m.padding(12).fontSize(14))
+  .applyIf(!isSmall, (m) => m.padding(20).fontSize(16))
+  .build();
+```
+
+### External State Management (Zustand)
+
+```typescript
+import { create } from "zustand";
 import {
   initializeTheme,
   createExternalStateAdapter,
-  ThemeMode,
 } from "react-native-modifier";
 
-const useThemeStore = create<{
-  theme: ThemeMode;
-  setTheme: (theme: ThemeMode) => void;
-}>((set) => ({
+const useThemeStore = create((set) => ({
   theme: "light",
   setTheme: (theme) => set({ theme }),
 }));
 
-// Connect to theme manager
-const themeManager = initializeTheme("light");
-themeManager.injectExternalState(
+initializeTheme("light").injectExternalState(
   createExternalStateAdapter(
     () => useThemeStore.getState().theme,
     (theme) => useThemeStore.getState().setTheme(theme),
@@ -512,57 +694,77 @@ themeManager.injectExternalState(
 );
 ```
 
-## Type Definitions
+## TypeScript Support
 
-The package exports the following types for TypeScript users:
+Full TypeScript support with exported types:
 
 ```typescript
 import type {
+  Modifier,
   ViewStyle,
   TextStyle,
+  ModifierStyle,
   StyleSheetLike,
   ColorScheme,
   ThemeMode,
-  DesignTokens,
   ThemeManager,
   ExternalStateManager,
 } from "react-native-modifier";
 ```
 
-- **`ViewStyle`** - View style properties
-- **`TextStyle`** - Text style properties (extends ViewStyle)
-- **`StyleSheetLike`** - Interface for StyleSheet-compatible objects
-- **`ColorScheme`** - Theme color scheme interface (24 semantic colors)
-- **`ThemeMode`** - `'light' | 'dark'`
-- **`DesignTokens`** - Design tokens interface
-- **`ThemeManager`** - Theme manager class
-- **`ExternalStateManager<T>`** - External state adapter interface
+| Type                      | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| `Modifier`                | Main modifier class                                  |
+| `ViewStyle`               | View style properties (all React Native view styles) |
+| `TextStyle`               | Text style properties (extends ViewStyle)            |
+| `ModifierStyle`           | Combined style type (ViewStyle & TextStyle)          |
+| `StyleSheetLike`          | Interface for StyleSheet-compatible objects          |
+| `ColorScheme`             | Theme color scheme interface (24 semantic colors)    |
+| `ThemeMode`               | `"light" \| "dark"`                                  |
+| `ThemeManager`            | Theme manager class                                  |
+| `ExternalStateManager<T>` | External state adapter interface                     |
 
 ## FAQ
 
 **Q: Do I need to install any dependencies?**  
-A: No! This library has zero dependencies. You only need React Native (which you already have).
+A: No! This library has zero dependencies. You only need React Native.
 
 **Q: Does this affect performance?**  
-A: No. The modifier pattern compiles to standard React Native styles. Theme changes only re-render subscribed components.
+A: No. The modifier compiles to standard React Native styles. Theme changes only re-render components that use `useModifierTheme()`.
 
 **Q: Can I use this without TypeScript?**  
-A: Yes! All features work in JavaScript. TypeScript just provides better autocomplete.
+A: Yes! All features work in JavaScript. TypeScript provides autocomplete and type safety.
 
 **Q: How do I toggle between light and dark mode?**  
-A: Call `getThemeManager().toggleTheme()` or `setTheme('dark')`.
+A: Use the `toggleTheme()` function from `useModifierTheme()` hook, or call `getThemeManager().toggleTheme()`.
 
-**Q: Can I use my own state management?**  
-A: Yes! Use `injectExternalState()` to connect Zustand, Redux, or any state manager. Or use the built-in `createExternalState()`. Note: `useExternalState` requires passing `useSyncExternalStore` from React (available in React 18+ and React Native 0.70+).
+**Q: Do I need to initialize the theme system?**  
+A: Only if you want to use theme features. For basic styling without themes, just use `createModifier()` directly.
+
+**Q: What is `useSyncExternalStore` and why do I need it?**  
+A: It's React's built-in hook (React 18+, React Native 0.70+) that enables reactive theme updates. You pass it once during initialization with `initializeColorScheme(useSyncExternalStore)`.
+
+**Q: Can I extend the Modifier class with my own methods?**  
+A: Yes! Extend the `Modifier` class and create your own factory function. See the "Extending the Modifier Class" section.
 
 **Q: Is this compatible with Expo?**  
-A: Yes! It works with any React Native setup including Expo.
+A: Yes! Works with Expo, bare React Native, and any React Native setup.
 
-**Q: Can I customize the color schemes?**  
-A: Yes! Pass partial or complete color schemes to `initializeTheme()`.
+**Q: Can I customize the color palette?**  
+A: Yes! Pass your custom colors to `initializeTheme("light", customLightColors, customDarkColors)`. Material Design 3 colors are included by default.
 
-**Q: How do I create reusable styled components?**  
-A: Create custom hooks that use `useThemedModifier()` or wrap the modifier in a context provider.
+**Q: How do I create reusable components?**  
+A: Extend the `Modifier` class with custom methods (like `.card()`, `.button()`) and use them throughout your app.
+
+## Key Benefits
+
+✅ **No More Style Object Naming** — Chain methods instead of naming every style object  
+✅ **Built-in Theming** — Light/dark mode with 24 semantic colors out of the box  
+✅ **Fully Extensible** — Add your own custom style methods and design tokens  
+✅ **Type-Safe** — Full TypeScript support with autocomplete for all 121+ methods  
+✅ **Zero Dependencies** — Pure TypeScript, works anywhere React Native works  
+✅ **Zero Configuration** — Use immediately with sensible defaults  
+✅ **Production Ready** — Battle-tested pattern from real-world projects
 
 ## Contributing
 
@@ -571,3 +773,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## License
 
 MIT
+
+---
+
+**Made with ❤️ for React Native developers who love clean, reusable styles**
