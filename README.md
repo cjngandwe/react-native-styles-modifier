@@ -4,14 +4,25 @@
 
 ## Why This Exists
 
-This library was born from a real need at a previous company. I loved working with React Native's `StyleSheet`, but I kept running into the same frustrations:
+This library was created to solve a practical problem I encountered while working with React Native styling.
 
-- **Reusability was painful** — Sharing styles meant messy arrays or complex style composition
-- **Theming was cumbersome** — Switching colors required helper functions scattered everywhere
-- **No naming conventions** — Every developer had their own way of organizing styles
-- **Limited extensibility** — Adding custom design patterns meant duplicating code
+While I enjoy using `StyleSheet` and `object-based styles`, I often needed a more structured and reusable way to define styles across an application. In many projects, styles become scattered across components, making them harder to reuse, maintain, and evolve as the design system grows.
 
-If you enjoy writing styles with objects but want **better reusability, built-in theming, and a consistent API**, this library is for you.
+This library provides a centralized styling approach built around a fluent API that makes styles easier to compose, extend, and standardize.
+
+## Key Benefits
+
+With this approach, you can:
+
+- **Define a theme** once and use it consistently across your application
+- **Create custom design tokens** (colors, spacing, typography, etc.)
+- **Build reusable style patterns** that can be extended or modified easily
+- **Maintain a consistent design language** through a predictable API
+- **Keep styling logic centralized** instead of spreading `StyleSheet.create()` calls across multiple components
+
+Because styles are built using a fluent API, you can compose and adjust them flexibly while keeping the code readable and predictable.
+
+The goal is to make styling simpler to scale, easier to maintain, and more consistent across the entire application.
 
 ## What You Get
 
@@ -21,7 +32,7 @@ If you enjoy writing styles with objects but want **better reusability, built-in
 📐 **Design Tokens** — Pre-configured spacing, border radius, font sizes, shadows, and more  
 🎯 **Zero Configuration** — Works out of the box, customize only what you need  
 📦 **Zero Dependencies** — Pure TypeScript, no external packages  
-⚡ **Type-Safe** — Full TypeScript support with autocomplete for all 121+ style properties
+⚡ **Type-Safe** — Full TypeScript support with autocomplete for all style properties
 
 ## Installation
 
@@ -48,7 +59,7 @@ const modifier = createModifier();
 
 function MyComponent() {
   // Build styles with a fluent API
-  const containerStyle = modifier
+  const containerStyle = modifier()
     .padding(16)
     .backgroundColor("#ffffff")
     .borderRadius(8)
@@ -57,7 +68,7 @@ function MyComponent() {
     .alignItems("center")
     .build();
 
-  const textStyle = modifier
+  const textStyle = modifier()
     .fontSize(16)
     .fontWeight("600")
     .color("#333333")
@@ -78,10 +89,25 @@ Unlock the full power with built-in theming. Initialize once in your app root:
 ```typescript
 // App.tsx or index.tsx
 import { useSyncExternalStore } from "react";
+import { useColorScheme } from "react-native";
 import { initializeTheme, initializeColorScheme } from "react-native-modifier";
 
 // Step 1: Initialize theme (light or dark)
 initializeTheme("light");
+
+// OR
+// Using the useColorScheme hook from React Native, to get the current system theme
+const colorScheme = useColorScheme();
+
+initializeTheme(colorScheme as ThemeMode);
+
+// OR
+// Using the async localStorage to persist the current theme
+
+const currentTheme = await storage.getItem(CURRENT_THEME);
+const theme = currentTheme ?? colorScheme;
+
+initializeTheme(theme);
 
 // Step 2: Initialize color scheme with React's useSyncExternalStore
 initializeColorScheme(useSyncExternalStore);
@@ -100,7 +126,7 @@ function ThemedComponent() {
   const { colors, mode, toggleTheme } = useModifierTheme();
 
   // Option 1: Extract style to a variable
-  const containerStyle = modifier
+  const containerStyle = modifier()
     .backgroundColor(colors.surface)
     .padding(24)
     .borderRadius(12)
@@ -115,7 +141,7 @@ function ThemedComponent() {
 
       {/* Option 2: Inline style (great for one-off styles) */}
       <View
-        style={modifier
+        style={modifier()
           .backgroundColor(colors.background)
           .marginHorizontal(8)
           .borderRadius(12)
@@ -136,7 +162,7 @@ Track when styles are being rebuilt during development by passing `__DEV__`:
 const modifier = createModifier(__DEV__);
 
 // Use build() with a label to track rebuilds
-const containerStyle = modifier
+const containerStyle = modifier()
   .backgroundColor(colors.surface)
   .padding(24)
   .borderRadius(12)
@@ -149,7 +175,6 @@ const containerStyle = modifier
 
 - ✅ Logging works in development
 - ✅ Zero logging in production builds
-- ✅ Automatic optimization by the bundler
 
 ### Conditional Styling
 
@@ -162,7 +187,7 @@ function TodoItem({ todo }) {
   const { colors } = useModifierTheme();
 
   // Option 1: Extract to variable
-  const itemStyle = modifier
+  const itemStyle = modifier()
     .padding(12)
     .borderRadius(8)
     .backgroundColor(colors.surface)
@@ -180,7 +205,7 @@ function TodoItemInline({ todo }) {
   // Option 2: Inline with conditional styling
   return (
     <View
-      style={modifier
+      style={modifier()
         .backgroundColor(colors.background)
         .marginHorizontal(8)
         .borderRadius(12)
@@ -207,6 +232,14 @@ import { Modifier } from "react-native-modifier";
 
 // Extend the Modifier class with your custom methods
 class CustomModifier extends Modifier {
+  // Conditional method for platform-specific styling
+  android(callback: (modifier: this) => this) {
+    if (Platform.OS === "android") {
+      return callback(this);
+    }
+    return this;
+  }
+
   // Custom card style
   card() {
     this.styles.backgroundColor = "#ffffff";
@@ -248,7 +281,7 @@ class CustomModifier extends Modifier {
 
 // Create your custom factory function
 export function createCustomModifier() {
-  return new CustomModifier();
+  return () => new CustomModifier();
 }
 ```
 
@@ -260,9 +293,13 @@ import { createCustomModifier } from "./CustomModifier";
 const modifier = createCustomModifier();
 
 function MyScreen() {
-  const cardStyle = modifier.card().spacingLarge().build();
-  const buttonStyle = modifier.primaryButton().build();
-  const titleStyle = modifier.heading().color("#333").build();
+  const cardStyle = modifier().card().spacingLarge().build();
+  const buttonStyle = modifier().primaryButton().build();
+  const titleStyle = modifier()
+    .android((m) => m.paddingBottom(0).backgroundColor("#fff"))
+    .heading()
+    .color("#333")
+    .build();
 
   return (
     <View style={cardStyle}>
@@ -377,7 +414,7 @@ Use your tokens:
 ```typescript
 const modifier = createModifier();
 
-const style = modifier.spacingMd().roundedLg().textBase().shadowMd().build();
+const style = modifier().spacingMd().roundedLg().textBase().shadowMd().build();
 ```
 
 ## Theme System
@@ -408,6 +445,7 @@ const { colors, mode, toggleTheme, setTheme } = useModifierTheme();
 - `mode` — Current theme mode (`"light"` | `"dark"`)
 - `toggleTheme()` — Toggle between light/dark
 - `setTheme(mode)` — Set specific theme mode
+- `await storage.setItem(mode)` — To save the theme in the async storage
 
 ### Custom Colors
 
@@ -423,11 +461,9 @@ declare module "react-native-modifier" {
 }
 
 // Initialize with custom colors (Material Design 3 colors included automatically)
-initializeTheme(
-  "light",
-  { brandPrimary: "#FF6B6B", success: "#51CF66" }, // light
-  { brandPrimary: "#FF8787", success: "#69DB7C" }, // dark
-);
+const light = { brandPrimary: "#FF6B6B", success: "#51CF66" };
+const dark = { brandPrimary: "#FF8787", success: "#69DB7C" };
+initializeTheme("light", light, dark);
 
 // Use anywhere
 const { colors } = useModifierTheme();
@@ -695,29 +731,6 @@ const style = createModifier()
   .build();
 ```
 
-### External State Management (Zustand)
-
-```typescript
-import { create } from "zustand";
-import {
-  initializeTheme,
-  createExternalStateAdapter,
-} from "react-native-modifier";
-
-const useThemeStore = create((set) => ({
-  theme: "light",
-  setTheme: (theme) => set({ theme }),
-}));
-
-initializeTheme("light").injectExternalState(
-  createExternalStateAdapter(
-    () => useThemeStore.getState().theme,
-    (theme) => useThemeStore.getState().setTheme(theme),
-    (listener) => useThemeStore.subscribe((state) => listener(state.theme)),
-  ),
-);
-```
-
 ## TypeScript Support
 
 Full TypeScript support with exported types:
@@ -756,9 +769,6 @@ A: No! This library has zero dependencies. You only need React Native.
 **Q: Does this affect performance?**  
 A: No. The modifier compiles to standard React Native styles. Theme changes only re-render components that use `useModifierTheme()`.
 
-**Q: Can I use this without TypeScript?**  
-A: Yes! All features work in JavaScript. TypeScript provides autocomplete and type safety.
-
 **Q: How do I toggle between light and dark mode?**  
 A: Use the `toggleTheme()` function from `useModifierTheme()` hook, or call `getThemeManager().toggleTheme()`.
 
@@ -779,16 +789,6 @@ A: Yes! Pass your custom colors to `initializeTheme("light", customLightColors, 
 
 **Q: How do I create reusable components?**  
 A: Extend the `Modifier` class with custom methods (like `.card()`, `.button()`) and use them throughout your app.
-
-## Key Benefits
-
-✅ **No More Style Object Naming** — Chain methods instead of naming every style object  
-✅ **Built-in Theming** — Light/dark mode with 24 semantic colors out of the box  
-✅ **Fully Extensible** — Add your own custom style methods and design tokens  
-✅ **Type-Safe** — Full TypeScript support with autocomplete for all 121+ methods  
-✅ **Zero Dependencies** — Pure TypeScript, works anywhere React Native works  
-✅ **Zero Configuration** — Use immediately with sensible defaults  
-✅ **Production Ready** — Battle-tested pattern from real-world projects
 
 ## Contributing
 
