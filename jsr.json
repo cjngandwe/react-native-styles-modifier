@@ -1,6 +1,6 @@
 {
   "name": "@rnative-modifier/react-native-modifier-build",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "A fluent API builder for creating type-safe React Native styles with method chaining and theme support",
   "license": "MIT",
   "exports": "./index.ts",
