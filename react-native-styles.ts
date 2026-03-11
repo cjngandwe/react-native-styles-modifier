@@ -17,7 +17,7 @@
 /**
  * Color value type - supports various color formats
  */
-export type ColorValue = string | number;
+export type ColorValue = string;
 
 /**
  * Dimension value - supports numbers, percentages, and 'auto'
@@ -424,30 +424,18 @@ export interface ViewStyleBase {
   borderTopRightRadius?: number | string | undefined;
   borderTopStartRadius?: number | string | undefined;
 
-  boxShadow?: ReadonlyArray<BoxShadowValue> | string | undefined;
+  boxShadow?: string | undefined;
 
   cursor?: CursorValue | undefined;
 
   elevation?: number | undefined;
 
-  experimental_backgroundImage?:
-    | ReadonlyArray<BackgroundImageValue>
-    | string
-    | undefined;
-  experimental_backgroundPosition?:
-    | ReadonlyArray<BackgroundPositionValue>
-    | string
-    | undefined;
-  experimental_backgroundRepeat?:
-    | ReadonlyArray<BackgroundRepeatValue>
-    | string
-    | undefined;
-  experimental_backgroundSize?:
-    | ReadonlyArray<BackgroundSizeValue>
-    | string
-    | undefined;
+  experimental_backgroundImage?: string | undefined;
+  experimental_backgroundPosition?: string | undefined;
+  experimental_backgroundRepeat?: string | undefined;
+  experimental_backgroundSize?: string | undefined;
 
-  filter?: ReadonlyArray<FilterFunction> | string | undefined;
+  filter?: string | undefined;
 
   isolation?: "auto" | "isolate" | undefined;
 
