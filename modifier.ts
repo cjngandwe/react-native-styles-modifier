@@ -926,6 +926,6 @@ export class Modifier {
  *   .build();
  * ```
  */
-export function createModifier(isDev?: boolean): Modifier {
-  return new Modifier(isDev ?? false);
+export function createModifier(isDev?: boolean): () => Modifier {
+  return () => new Modifier(isDev ?? false);
 }
