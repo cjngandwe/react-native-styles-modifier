@@ -1,16 +1,16 @@
 import type {
-  ViewStyle,
-  TextStyle,
   ColorValue,
   DimensionValue,
+  FlexStyle,
+  FontVariant,
   ModifierStyle,
   StyleSheetLike,
-  FlexStyle,
+  TextStyle,
   TransformsStyle,
-  FontVariant,
+  ViewStyle,
 } from "./react-native-styles.ts";
 
-export type { ViewStyle, TextStyle, ModifierStyle, StyleSheetLike };
+export type { ModifierStyle, StyleSheetLike, TextStyle, ViewStyle };
 
 /**
  * Root style interface for style objects.
@@ -926,6 +926,6 @@ export class Modifier {
  *   .build();
  * ```
  */
-export function createModifier(isDev: boolean = false): Modifier {
-  return new Modifier(isDev);
-}
+export const createModifier: (isDev?: boolean) => Modifier = (() => {
+  return (isDev: boolean = false) => new Modifier(isDev);
+})();
