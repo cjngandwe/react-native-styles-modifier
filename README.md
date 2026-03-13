@@ -26,22 +26,22 @@ The goal is to make styling simpler to scale, easier to maintain, and more consi
 
 ## What You Get
 
-✨ **Chainable Style API** — Build styles fluently without worrying about object keys  
-🎨 **Built-in Theme System** — Colors, modes, and palettes ready to use (customizable)  
-🔧 **Extensible Modifier Class** — Add your own custom style methods once, use everywhere  
-📐 **Design Tokens** — Pre-configured spacing, border radius, font sizes, shadows, and more  
-🎯 **Zero Configuration** — Works out of the box, customize only what you need  
-📦 **Zero Dependencies** — Pure TypeScript, no external packages  
+**Chainable Style API** — Build styles fluently without worrying about object keys  
+**Built-in Theme System** — Colors, modes, and palettes ready to use (customizable)  
+**Extensible Modifier Class** — Add your own custom style methods once, use everywhere  
+**Design Tokens** — Pre-configured spacing, border radius, font sizes, shadows, and more  
+**Zero Configuration** — Works out of the box, customize only what you need  
+**Zero Dependencies** — Pure TypeScript, no external packages  
 ⚡ **Type-Safe** — Full TypeScript support with autocomplete for all style properties
 
 ## Installation
 
 ```bash
-npm install react-native-modifier
+npm install react-native-styles-modifier
 # or
-yarn add react-native-modifier
+yarn add react-native-styles-modifier
 # or
-pnpm add react-native-modifier
+pnpm add react-native-styles-modifier
 ```
 
 ## Quick Start
@@ -52,7 +52,7 @@ The simplest way to use the library — just import and start chaining styles:
 
 ```typescript
 import { View, Text } from "react-native";
-import { createModifier } from "react-native-modifier";
+import { createModifier } from "react-native-styles-modifier";
 
 // Create a modifier instance
 const modifier = createModifier();
@@ -90,7 +90,10 @@ Unlock the full power with built-in theming. Initialize once in your app root:
 // App.tsx or index.tsx
 import { useSyncExternalStore } from "react";
 import { useColorScheme } from "react-native";
-import { initializeTheme, initializeColorScheme } from "react-native-modifier";
+import {
+  initializeTheme,
+  initializeColorScheme,
+} from "react-native-styles-modifier";
 
 // Step 1: Initialize theme (light or dark)
 initializeTheme("light");
@@ -117,7 +120,7 @@ Then use the theme anywhere in your app:
 
 ```typescript
 import { View, Text, Button } from "react-native";
-import { createModifier, useModifierTheme } from "react-native-modifier";
+import { createModifier, useModifierTheme } from "react-native-styles-modifier";
 
 const modifier = createModifier();
 
@@ -173,8 +176,8 @@ const containerStyle = modifier()
 
 **Important:** Always pass `__DEV__` (React Native's global) instead of hardcoding `true` or `false`. This ensures:
 
-- ✅ Logging works in development
-- ✅ Zero logging in production builds
+- Logging works in development
+- Zero logging in production builds
 
 ### Conditional Styling
 
@@ -228,7 +231,7 @@ One of the most powerful features is the ability to extend the `Modifier` class 
 ### Creating Custom Style Methods
 
 ```typescript
-import { Modifier } from "react-native-modifier";
+import { Modifier } from "react-native-styles-modifier";
 
 // Extend the Modifier class with your custom methods
 class CustomModifier extends Modifier {
@@ -453,7 +456,7 @@ Add your own brand colors:
 
 ```typescript
 // Declare custom colors
-declare module "react-native-modifier" {
+declare module "react-native-styles-modifier" {
   interface CustomColorScheme {
     brandPrimary: string;
     success: string;
@@ -746,7 +749,7 @@ import type {
   ThemeMode,
   ThemeManager,
   ExternalStateManager,
-} from "react-native-modifier";
+} from "react-native-styles-modifier";
 ```
 
 | Type                      | Description                                          |
@@ -800,4 +803,4 @@ MIT
 
 ---
 
-**Made with ❤️ for React Native developers who love clean, reusable styles**
+**Made for React Native developers who love clean, reusable styles**

@@ -1,4 +1,5 @@
-import { ThemeMode, ColorScheme, getThemeManager } from "./theme.ts";
+import type { ThemeMode, ColorScheme } from "./theme.ts";
+import { getThemeManager } from "./theme.ts";
 
 // Type for useSyncExternalStore hook
 type UseSyncExternalStore = <T>(
