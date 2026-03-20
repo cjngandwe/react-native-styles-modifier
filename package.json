@@ -1,0 +1,67 @@
+{
+  "name": "react-native-styles-modifier",
+  "version": "1.0.0",
+  "description": "A fluent API builder for creating type-safe React Native styles with method chaining and theme support",
+  "sideEffects": false,
+  "type": "module",
+  "main": "./lib/module/index.js",
+  "module": "lib/module/index.js",
+  "react-native": "./lib/module/index.js",
+  "types": "./lib/typescript/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/typescript/index.d.ts",
+      "default": "./lib/module/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "homepage": "https://github.com/cjngandwe/react-native-styles-modifier#readme",
+  "bugs": {
+    "url": "https://github.com/cjngandwe/react-native-styles-modifier/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cjngandwe/react-native-styles-modifier.git"
+  },
+  "license": "MIT",
+  "author": "Joshua Ng'andwe",
+  "files": [
+    "lib",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "bob build",
+    "prepare": "bob build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      "typescript"
+    ]
+  },
+  "devDependencies": {
+    "react-native-builder-bob": "^0.40.18",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": false
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ]
+}
